@@ -1,2 +1,0 @@
-# SanDP
-SanDix Processor
