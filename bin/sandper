@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import sys
+import sandp
+from sandp import waveform
+from sandp import rawdata
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    
+    ## --------------> Testing ... ...
+    parser.add_argument(
+    '--testing',
+    dest='code_test',
+    action='store_true',
+    help='just testing if it works!')
+    ## --------------> Testing ... ...
+    
+    ## version:
+    parser.add_argument('--version', action = 'store_true', help = "latest version")
+    
+    ## wavefom:
+    parser.add_argument(
+    '--waveform',
+    dest='generate_wf',
+    action='store_true',
+    help='generate waveform from raw data')
+    
+    ## input file
+    parser.add_argument(
+    '--input',
+    action='store',
+    dest='raw_data',
+    help='name of the raw data',
+    type=str)
+    
+    ## event ID
+    parser.add_argument(
+        '--event', 
+        action = 'store', 
+        dest = 'eventid',
+        help = "which event you want to see?",
+        type = int)
+
+    
+    ### =====================>
+    ### =====================>
+    args = parser.parse_args()
+
+    if args.version:
+        print (sandp.__version__)
+        exit()
+        
+    ###################
+    ## start processing
+    ###################
+    
+    if (args.generate_wf):
+        waveform.drawWF(args.eventid, args.raw_data)
+
+    ################################   
+    ## Testing --->
+    
+    if (args.code_test):
+        rawdata.printoutsmooth(args.eventid, args.raw_data)
+    ################################
+    
+if __name__ == '__main__':
+    main()
