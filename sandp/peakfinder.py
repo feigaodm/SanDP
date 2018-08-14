@@ -11,31 +11,25 @@ import time
 import numpy as np
 
 
-## Baseline mean-value:
-def mean(data):
-    return sum(data)/len(data)
-
-## Baseline standard-derivation:
-def std(data):
-    meanValue=mean(data)
-    std_up= sum([(data[i]-meanValue)**2 for i in range(len(data))])
-    return (std_up/(len(data)-1))**0.5
-
 ## Find any potenrial peaks with required width:
 def find_potential_peaks(data_smooth, left_width, right_width, threshold):
-    def accurate_S_boundary(S, data_smooth, threshold_left, threshold_right): ## The big _S_ means signal.
-        for i in range(len(S)):
+    
+    ## 2) function the refine the boundary searching:
+    ## S is 2D list contains the [left, right] edge of each Peaks.
+    def accurate_S_boundary(S, data_smooth, threshold_left, threshold_right): 
+        for i in range(len(S)): ## len(S) is number of Peaks.
             boundary=S[i]
-            num=boundary[0]
+            num=boundary[0] ## Left edge.
             while  (num > 0) and (data_smooth[num] > threshold_left) :
                 num-=1
             S[i][0]=num
-            num=boundary[1]
+            num=boundary[1] ## Right edge.
             while (num<len(data_smooth)) and (data_smooth[num] > threshold_right):
                 num+=1
             S[i][1]=num
-        return S
-
+        return S  
+    
+    ## 1) roughly find the edge for each peak.
     S=[]
     clib=ctypes.cdll.LoadLibrary("/home/yuehuan/SanDiX/SanDP/sandp/findPoWa/findPoWa.so")
     data_c=(ctypes.c_double * len(data_smooth))()
@@ -49,12 +43,15 @@ def find_potential_peaks(data_smooth, left_width, right_width, threshold):
             ctypes.c_int(right_width), 
             ctypes.c_double(threshold))
     s_tmp=S1.split(";")
-    if len(s_tmp) > 20:
+    if len(s_tmp) > 20: ## if more than 20 peaks find, means the event is very noisy!
         return []
     del s_tmp[-1]
     for i in s_tmp:
         tmp=i.split(",")
         tmp[0]=int(tmp[0])
         tmp[1]=int(tmp[1])
-        S.append(tmp)
-    return accurate_S_boundary(S,data_smooth,threshold/2.,2.*threshold)
+        S.append(tmp) ## S is 2D list contains the [left, right] edge of each Peaks. 
+    
+    ## First:  using 1) to roughly fiind all peaks.
+    ## Second: call the func to re-fine the left/right edge.
+    return accurate_S_boundary(S,data_smooth,threshold/2., threshold*2)

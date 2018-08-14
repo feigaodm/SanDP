@@ -8,9 +8,9 @@
 using namespace std;
 
 void smooth(double * dataSmooth,
-         int   meanNum,
-         int   length,
-         int   coverNum)
+               int   meanNum,
+               int   length,
+               int   coverNum)
 {
    vector<double> data;
    double tmp,mean=0;
@@ -23,8 +23,7 @@ void smooth(double * dataSmooth,
    for (size_t i=0;i!=meanNum;i++)
        mean+=data[i];
    mean/=meanNum;
-   
-   
+    
    for (size_t i=coverNum;i!=length;i++)
    {
        tmp=0;
@@ -35,7 +34,7 @@ void smooth(double * dataSmooth,
            tmp+=data[j];
            count++;
        }
-       dataSmooth[i]=abs(mean-tmp/count);
+       dataSmooth[i]=(mean-tmp/count); //remove 'abs'
    }
  
    //cout << coverNum << " " <<length<< endl;

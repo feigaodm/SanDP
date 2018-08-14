@@ -9,23 +9,24 @@ import sys
 import math
 import ctypes
 import time
-
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
 from peakfinder import find_potential_peaks
 
+from configparser import ConfigParser
+cfg = ConfigParser()
+cfg.read('/home/yuehuan/SanDiX/SanDP/sandp/config/sandix.ini')
+
+nsamps = int (cfg['peaks']['nsamps'])
+nchs =   int (cfg['peaks']['nchs'])
+
+######################################################################
+
 ## Read Raw Data :
 ## Be noted: 4 is the length of the str. it is always 4 bytes. 
 def get_raw(event_number, filename):
-    
-    #######
-    ## parameters here need to be put in config.ini
-    nsamps = 20000  ## samples in wavedump setting
-    nchs = 4          ## number of channels in total 
-    #######
-    
     length_unit = 4
     ## Seek the offset: 
     def calculate_seek_number(event_number):
@@ -73,15 +74,15 @@ def get_raw(event_number, filename):
                     
     ## ---------------------->
     ## Testing:
-    print 'Length of the summed-chs WF:    ',len(data)
-    print 'Length of the individual-ch WF: ',len(channel[0])
-    print 'Number of channels in total:    ',len(channel)
+    # print 'Length of the summed-chs WF:    ',len(data)
+    # print 'Length of the individual-ch WF: ',len(channel[0])
+    # print 'Number of channels in total:    ',len(channel)
     ## ---------------------->
     
     return data,channel,MicroSec
 
 ## summed WF smoothing:
-def smooth(origindata,meanNum=100,cover_num=2):
+def smooth(origindata,meanNum=100,cover_num=1):
     clib=ctypes.cdll.LoadLibrary("/home/yuehuan/SanDiX/SanDP/sandp/smooth/smooth.so")
     data_smooth=(ctypes.c_double * len(origindata))()
     for i in range(len(origindata)):
@@ -91,30 +92,3 @@ def smooth(origindata,meanNum=100,cover_num=2):
         data_smooth[i]=0
         data_smooth[i-1]=0
     return data_smooth
-
-## Draw smooth summed-WF:
-def printoutsmooth(evt, fname):
-    dat_raw,channels,MicroSec = get_raw(evt, fname)
-    dat_smooth = smooth(dat_raw)
-    samp_len = len(dat_smooth)
-    
-    sams = np.linspace(0, samp_len, samp_len)
-    plt.figure(figsize = (15,6))
-
-    plt.xlim(-10, samp_len + 10)
-    #plt.ylim(0, 2.05)
-
-    plt.xlabel('Samples[4ns]', fontsize =15)
-    #plt.ylabel('Amp[V]', fontsize =15)
-
-    plt.grid(True)
-
-    plt.xticks(fontsize=15)
-    plt.yticks(fontsize=15)
-
-    plt.plot(sams, dat_raw,    color='red',  linestyle='-', linewidth=1., label = 'raw data')
-    plt.plot(sams, dat_smooth, color='blue', linestyle='-', linewidth=1., label = 'smooth data')
-   
-    legend = plt.legend(loc='lower left', shadow=True, fontsize = 15)
-
-    plt.show()

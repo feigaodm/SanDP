@@ -4,74 +4,177 @@ sys.setdefaultencoding('utf-8')
 import struct
 import os
 import time
+from array import array
 
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
+from rawdata import get_raw
+from rawdata import smooth
+from peakfinder import find_potential_peaks
+from peakrefine import split_S2
+from peakrefine import peak_width
+from peakrefine import accurate_peaks
+from peakrefine import accurate_S1
+
+from configparser import ConfigParser
+cfg = ConfigParser()
+cfg.read('/home/yuehuan/SanDiX/SanDP/sandp/config/sandix.ini')
+
+s1width_lower_limit = int (cfg['peaks']['s1width_lower_limit'])
+s1width_upper_limit = int (cfg['peaks']['s1width_upper_limit'])
+s2width_lower_limit = int (cfg['peaks']['s2width_lower_limit'])
+s2width_upper_limit = int (cfg['peaks']['s2width_upper_limit'])
+
+nsamps = int (cfg['peaks']['nsamps'])
+nsamp_base = int (cfg['peaks']['nsamp_base'])
+s1_thre_base = int (cfg['peaks']['s1_thre_base'])
+s2_thre_base = int (cfg['peaks']['s2_thre_base'])
+trigger_position = int (cfg['peaks']['trigger_position'])
+
 def drawWF(evt, fname):
-    infile = open(fname)
-    evtID = evt
+    dat_raw,channels,MicroSec = get_raw(evt, fname)
+    dat_smooth = smooth(dat_raw)
     
-    #######
-    ## parameters here need to be put in config.ini
-    nsamples = 20000  ## samples in wavedump setting
-    nchs = 4          ## number of channels in total 
-    #######
+    #----------->
+    rawbaseline = np.mean(dat_raw[0:100])
+    dat_raw_temp = []
+    for i in range(len(dat_raw)):
+        dat_raw_temp.append(rawbaseline - dat_raw[i])
+    #----------->
     
-    ch0 = []
-    ch1 = []
-    ch2 = []
-    ch3 = []
+    ## Baseline:
+    BaseLineSumSigma=array('f',[0.0]) 
+    BaseLineSumSigma[0]=np.std(dat_smooth[:nsamp_base]) ## shall we use raw_data instead of smoothed one here?
+    ##=== find potential S1 S2 =====
+    S1_potential = find_potential_peaks(dat_smooth[:],
+                                        s1width_lower_limit,
+                                        s1width_upper_limit,
+                                        max(0.001,s1_thre_base*BaseLineSumSigma[0]))
 
+    S2_potential = find_potential_peaks(dat_smooth,
+                                        s2width_lower_limit,
+                                        s2width_upper_limit,
+                                        max(0.001,s2_thre_base*BaseLineSumSigma[0])) 
+    print 'S1 edges: ',S1_potential
+    print 'S2 edges: ',S2_potential
+    print len(S1_potential)
+    print len(S2_potential)
+    print '\n'
     
-    for i in range(nsamples/2):
-        infile.seek(4*i + 4*7 + 6*evtID*4 + (nchs*nsamples/2)*evtID*4)
-        tmp=struct.unpack("i",infile.read(4))[0]
-        ch0.append((tmp >> 16)*2.0/4096)
-        ch0.append((tmp & 0x0000ffff)*2.0/4096)
+    S2_split=split_S2(dat_smooth,S2_potential,0.1,1./5)
+    S1_temp,S2=accurate_peaks(dat_smooth,S1_potential,S2_split,trigger_position)
+    S1 = accurate_S1(dat_smooth,S1_temp,S2,s1width_upper_limit)
+    
+    print 'S1 edges: ',S1
+    print 'S2 edges: ',S2
+    print len(S1)
+    print len(S2)
 
-    for i in range(nsamples/2, nsamples):
-        infile.seek(4*i + 4*7 + 6*evtID*4 + (nchs*nsamples/2)*evtID*4)
-        tmp=struct.unpack("i",infile.read(4))[0]
-        ch1.append((tmp >> 16)*2.0/4096)
-        ch1.append((tmp & 0x0000ffff)*2.0/4096)
-
-    for i in range(nsamples, nsamples*3/2):
-        infile.seek(4*i + 4*7 + 6*evtID*4 + (nchs*nsamples/2)*evtID*4)
-        tmp=struct.unpack("i",infile.read(4))[0]
-        ch2.append((tmp >> 16)*2.0/4096)
-        ch2.append((tmp & 0x0000ffff)*2.0/4096)
-
-    for i in range(nsamples*3/2, nsamples*2):
-        infile.seek(4*i + 4*7 + 6*evtID*4 + (nchs*nsamples/2)*evtID*4)
-        tmp=struct.unpack("i",infile.read(4))[0]
-        ch3.append((tmp >> 16)*2.0/4096)
-        ch3.append((tmp & 0x0000ffff)*2.0/4096)
-
-    ### ------------------------------------------------------------------
-    ### ----------------------- draw the Waveform ------------------------>
-
-    samples = np.linspace(0, nsamples, nsamples)
-    plt.figure(figsize = (15,6))
-
-    plt.xlim(-10, nsamples + 10)
-    plt.ylim(0, 2.05)
-
-    plt.xlabel('Samples[4ns]', fontsize =15)
-    plt.ylabel('Amp[V]', fontsize =15)
-
+    ######################################################################################################:
+    samp_len = nsamps
+    sams = np.linspace(0, samp_len, samp_len)
+   
+    ## Summed WF:
+    fig, ax = plt.subplots(figsize = (10,5))
+    plt.xlim(-10, samp_len + 10)
+    ## plt.xlim(6900, 6950)
+    plt.xlabel('Samples [4ns]', fontsize =15)
+    plt.ylabel('Amp [V]', fontsize =15)
     plt.grid(True)
-
     plt.xticks(fontsize=15)
     plt.yticks(fontsize=15)
-
-    plt.plot(samples, ch0, color='red',         linestyle='-', linewidth=1., label = 'Ch0')
-    plt.plot(samples, ch1, color='blue',        linestyle='-', linewidth=1., label = 'Ch1')
-    plt.plot(samples, ch2, color='springgreen', linestyle='-', linewidth=1., label = 'Ch2')
-    plt.plot(samples, ch3, color='black',       linestyle='-', linewidth=1., label = 'Ch3')
-
-    legend = plt.legend(loc='lower left', shadow=True, fontsize = 15)
-
-    plt.show()
-
+    plt.plot(sams, dat_smooth, color='red', linestyle='-', linewidth=1., label = 'Smoothed Waveform')
+    plt.plot(sams, dat_raw_temp, color='black', linestyle='-', linewidth=1., label = 'Summed Waveform')
+    legend = plt.legend(loc='best', shadow=True, fontsize = 10)
+    ## plot baseline:
+    plt.axhline(s1_thre_base*BaseLineSumSigma[0], color='springgreen', linestyle='-', linewidth = 0.5, label = '')
+    ## S1:
+    if len(S1) > 0:
+        for p1 in range(len(S1)):
+            ax.axvspan(S1[p1][0], S1[p1][1], alpha=0.2, color='red') 
+    ## S2:
+    if len(S2) > 0:
+        for p2 in range(len(S2)):
+            ax.axvspan(S2[p2][0], S2[p2][1], alpha=0.2, color='yellow')
+    # plt.show()
+    
+    ######################################################################################################:
+    #miny = min(min(channels[0]), min(channels[1]), min(channels[2]), min(channels[3]))
+    #maxy = max(max(channels[0]), max(channels[1]), max(channels[2]), max(channels[3]))
+    miny = min(min(channels[0]), min(channels[1]))
+    maxy = max(max(channels[0]), max(channels[1]))
+    ## individul WF:
+    fig_individual = plt.figure(figsize = (10, 8))
+    plt.subplot(411)
+    
+    ##plt.xlim(400, 500)
+    plt.ylim(0, 2.0)
+    plt.xlim(-10, samp_len + 10)
+    ##plt.ylim(miny, maxy)
+    
+    plt.xlabel('', fontsize =0)
+    plt.ylabel('ch0 [V]', fontsize =10)
+    plt.grid(True)
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.plot(sams, channels[0], color='black', linestyle='-', linewidth=1., label = '')
+    #plt.scatter(sams, channels[0], s=150, c='red', marker='*', label = '')
+    ## plt.axhline(0, color='red', linestyle='-', linewidth = 1)
+    plt.axvline(10000, color='magenta', linestyle='--', linewidth = 1)
+    #------------------------------------------------------------------------------------>
+    plt.subplot(412)
+    
+    ##plt.xlim(400, 500)
+    plt.ylim(0, 2.0)
+    plt.xlim(-10, samp_len + 10)
+    ## plt.ylim(miny, maxy)
+    
+    plt.xlabel('Samples [4ns]', fontsize =10)
+    plt.ylabel('ch1 [V]', fontsize =10)
+    plt.grid(True)
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.plot(sams, channels[1], color='black', linestyle='-', linewidth=1., label = '')
+    #plt.scatter(sams, channels[1], s=150, c='blue', marker='*', label = '')
+    ## plt.axhline(0, color='red', linestyle='-', linewidth = 1)
+    plt.axvline(10000, color='magenta', linestyle='--', linewidth = 1)
+    #------------------------------------------------------------------------------------>
+    
+    plt.subplot(413)
+    
+    ##plt.xlim(400, 500)
+    ##plt.ylim(0, 2.0)
+    plt.xlim(-10, samp_len + 10)
+    plt.ylim(miny, maxy)
+    
+    plt.xlabel('Samples [4ns]', fontsize =10)
+    plt.ylabel('ch1 [V]', fontsize =10)
+    plt.grid(True)
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    #plt.plot(sams, channels[2], color='black', linestyle='-', linewidth=1., label = '')
+    ## plt.axhline(0, color='red', linestyle='-', linewidth = 1)
+    plt.axvline(10000, color='magenta', linestyle='--', linewidth = 1)
+    #------------------------------------------------------------------------------------>
+    plt.subplot(414)
+    
+    plt.xlim(400, 500)
+    ##plt.ylim(0, 2.0)
+    ##plt.xlim(-10, samp_len + 10)
+    plt.ylim(miny, maxy)
+    
+    plt.xlabel('Samples [4ns]', fontsize =10)
+    plt.ylabel('ch1 [V]', fontsize =10)
+    plt.grid(True)
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    #plt.plot(sams, channels[3], color='black', linestyle='-', linewidth=1., label = '')
+    ## plt.axhline(0, color='red', linestyle='-', linewidth = 1)
+    plt.axvline(10000, color='magenta', linestyle='--', linewidth = 1)
+    #------------------------------------------------------------------------------------>
+    
+    plt.show(block=False)
+    raw_input("Hit Enter To Close")
+    plt.close()
