@@ -1,67 +1,59 @@
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-import struct
-import os
-import time
+import math
 from array import array
-
 import numpy as np
 import matplotlib
-import matplotlib.pyplot as plt
 
-from rawdata import get_raw
-from rawdata import smooth
-from peakfinder import find_potential_peaks
-from peakrefine import split_S2
-from peakrefine import peak_width
-from peakrefine import accurate_peaks
-from peakrefine import accurate_S1
 
-from configparser import ConfigParser
-cfg = ConfigParser()
-cfg.read('/home/yuehuan/SanDiX/SanDP/sandp/config/sandix.ini')
+## 1) 
+## calculate Entropy for each peak, the entropy quantifies the uniformity of the siganl in time: 
+## --------------------------------------------------------------------------------------------->
+def Entropy(nchannels,data_channel,BASE_line,boundary,threshold):
+    Entropy=0
+    for ich in range(nchannels):
+        Area=sum([abs(BASE_line[ich]-data_channel[ich][i]) for i in range(boundary[0],boundary[1])])
+        for i in range(boundary[0],boundary[1]):
+            if (abs(BASE_line[ich]-data_channel[ich][i])>threshold[ich]) and (Area>0):
+                prob = abs(BASE_line[ich]-data_channel[ich][i])/Area            
+                Entropy -= prob * math.log(prob)
+    return Entropy             
 
-s1width_lower_limit = int (cfg['peaks']['s1width_lower_limit'])
-s1width_upper_limit = int (cfg['peaks']['s1width_upper_limit'])
-s2width_lower_limit = int (cfg['peaks']['s2width_lower_limit'])
-s2width_upper_limit = int (cfg['peaks']['s2width_upper_limit'])
+## 2)
+## the uniformity quantifies the uniformity of the signal distributed in all PMTs:
+## --------------------------------------------------------------------------------------------->
+def Uniformity(nchannels,PMTgain,data_channel,BASE_line,boundary,threshold=0.3):
+    Uniformity=0
+    TotalArea=0
+    Area=array("f",nchannels*[0.0])
+    for ich in range(nchannels):
+        Area[ich]=4.9932e8/PMTgain[ich]*sum([abs(BASE_line[ich]-data_channel[ich][i]) for i in range(boundary[0],boundary[1])])
+        TotalArea+=Area[ich]
+        if (TotalArea>threshold) and (Area[ich]!=0):
+            Prob = abs (Area[ich] / TotalArea)
+            Uniformity-= Prob * math.log(Prob)
+    return Uniformity
 
-nsamp_base = int (cfg['peaks']['nsamp_base'])
-s1_thre_base = int (cfg['peaks']['s1_thre_base'])
-s2_thre_base = int (cfg['peaks']['s2_thre_base'])
-trigger_position = int (cfg['peaks']['trigger_position'])
+## 3)
+## Integral for peak area calculation:
+## --------------------------------------------------------------------------------------------->
+def integral(S,data,BASE_line,PMTgain):
+    data_tmp=[]
+    for boundary in S:
+        data_tmp.append(4.9932e8/PMTgain*sum([BASE_line-data[i] for i in range(boundary[0],boundary[1]+1)]))
+    return data_tmp
 
-## processing the data:
-def processing(evt, fname):
-    
-    dat_raw,channels,MicroSec = get_raw(evt, fname)
-    dat_smooth = smooth(dat_raw)
-    
-    ## Baseline:
-    BaseLineSumSigma=array('f',[0.0]) 
-    BaseLineSumSigma[0]=np.std(dat_smooth[:nsamp_base]) ## shall we use raw_data instead of smoothed one here?
-    ##=== find potential S1 S2 =====
-    S1_potential = find_potential_peaks(dat_smooth[:], #number of 10000 is half number of samples, need to be changed here.
-                                        s1width_lower_limit,
-                                        s1width_upper_limit,
-                                        max(0.001,s1_thre_base*BaseLineSumSigma[0]))
+## 4)
+## Sorting peaks by area, returning the sort index :
+## --------------------------------------------------------------------------------------------->
+def sort_area(S_trap):
+    argsort=[]
+    for i in range(len(S_trap)):
+        maxIndex=-1
+        maxValue=-9999
+        for j in range(len(S_trap)):
+            if (S_trap[j] > maxValue) and (j not in argsort):
+                maxIndex=j
+                maxValue=S_trap[j] 
+        argsort.append(maxIndex)
+    return argsort
 
-    S2_potential = find_potential_peaks(dat_smooth,
-                                        s2width_lower_limit,
-                                        s2width_upper_limit,
-                                        max(0.001,s2_thre_base*BaseLineSumSigma[0])) 
-    print 'S1 edges: ',S1_potential
-    print 'S2 edges: ',S2_potential
-    print len(S1_potential)
-    print len(S2_potential)
-    print '\n'
-    
-    S2_split=split_S2(dat_smooth,S2_potential,0.1,1./5)
-    S1_temp,S2=accurate_peaks(dat_smooth,S1_potential,S2_split,trigger_position)
-    S1 = accurate_S1(dat_smooth,S1_temp,S2,s1width_upper_limit)
-    
-    print 'S1 edges: ',S1
-    print 'S2 edges: ',S2
-    print len(S1)
-    print len(S2)
+

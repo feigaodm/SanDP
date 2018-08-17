@@ -2,9 +2,15 @@ README.rst
 setup.py
 bin/sandper
 sandp/__init__.py
+sandp/peakfinder.py
+sandp/peakproperty.py
+sandp/peakrefine.py
 sandp/rawdata.py
 sandp/waveform.py
 sandp.egg-info/PKG-INFO
 sandp.egg-info/SOURCES.txt
 sandp.egg-info/dependency_links.txt
 sandp.egg-info/top_level.txt
+sandp/config/__init__.py
+sandp/config/sandix.ini
+sandp/data/__init__.py

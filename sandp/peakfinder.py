@@ -10,7 +10,6 @@ import ctypes
 import time
 import numpy as np
 
-
 ## Find any potenrial peaks with required width:
 def find_potential_peaks(data_smooth, left_width, right_width, threshold):
     
@@ -43,15 +42,15 @@ def find_potential_peaks(data_smooth, left_width, right_width, threshold):
             ctypes.c_int(right_width), 
             ctypes.c_double(threshold))
     s_tmp=S1.split(";")
-    if len(s_tmp) > 20: ## if more than 20 peaks find, means the event is very noisy!
+    if len(s_tmp) > 100: ## if more than 100 peaks find, means the event is very noisy!
         return []
     del s_tmp[-1]
     for i in s_tmp:
         tmp=i.split(",")
-        tmp[0]=int(tmp[0])
-        tmp[1]=int(tmp[1])
+        tmp[0]=int (float(tmp[0]))
+        tmp[1]=int (float(tmp[1]))
         S.append(tmp) ## S is 2D list contains the [left, right] edge of each Peaks. 
     
     ## First:  using 1) to roughly fiind all peaks.
     ## Second: call the func to re-fine the left/right edge.
-    return accurate_S_boundary(S,data_smooth,threshold/2., threshold*2)
+    return accurate_S_boundary(S,data_smooth,threshold/2., threshold*2.)

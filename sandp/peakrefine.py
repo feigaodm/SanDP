@@ -80,7 +80,7 @@ def accurate_peaks(data_smooth,
     S2=[]
     for boundary in S2_split:
         halfPeak = peak_width(data_smooth,0.5,boundary)
-        if (halfPeak[1] < trigger_pos) and ((boundary[1]-boundary[0] < 100) or (halfPeak[2]-halfPeak[1] <= 50)):
+        if (halfPeak[1] < trigger_pos) and ((boundary[1]-boundary[0] < 50) or (halfPeak[1]-halfPeak[0] <= 25)):
             if boundary[1] < trigger_pos :
                 S1.append(boundary)
             elif boundary[1] - boundary[0] > 50:

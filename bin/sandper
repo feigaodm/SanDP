@@ -6,18 +6,19 @@ import sys
 import sandp
 from sandp import waveform
 from sandp import rawdata
-
+from sandp import peakproperty
+from sandp import calvariables
 
 def main():
     parser = argparse.ArgumentParser()
     
-    ## --------------> Testing ... ...
+    ## -------------->
     parser.add_argument(
-    '--testing',
-    dest='code_test',
+    '--process',
+    dest='processing',
     action='store_true',
-    help='just testing if it works!')
-    ## --------------> Testing ... ...
+    help='start processing rawdata')
+    ## -------------->
     
     ## version:
     parser.add_argument('--version', action = 'store_true', help = "latest version")
@@ -36,6 +37,14 @@ def main():
     dest='raw_data',
     help='name of the raw data',
     type=str)
+
+    ## path of the processed file
+    parser.add_argument(
+    '--outpath',
+    action='store',
+    dest='outdata_path',
+    help='the location that save the processed file',
+    type=str)
     
     ## event ID
     parser.add_argument(
@@ -45,7 +54,6 @@ def main():
         help = "which event you want to see?",
         type = int)
 
-    
     ### =====================>
     ### =====================>
     args = parser.parse_args()
@@ -55,18 +63,20 @@ def main():
         exit()
         
     ###################
-    ## start processing
+    ## show waveform
     ###################
     
     if (args.generate_wf):
         waveform.drawWF(args.eventid, args.raw_data)
 
-    ################################   
-    ## Testing --->
+    ###################
+    ## start processing
+    ###################
     
-    if (args.code_test):
-        rawdata.printoutsmooth(args.eventid, args.raw_data)
-    ################################
+    if (args.processing):
+        calvariables.process(args.raw_data, args.outdata_path)
+
+
     
 if __name__ == '__main__':
     main()

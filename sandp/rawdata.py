@@ -24,7 +24,8 @@ nchs =   int (cfg['peaks']['nchs'])
 
 ######################################################################
 
-## Read Raw Data :
+## 1)
+## Read Raw Data:
 ## Be noted: 4 is the length of the str. it is always 4 bytes. 
 def get_raw(event_number, filename):
     length_unit = 4
@@ -81,8 +82,9 @@ def get_raw(event_number, filename):
     
     return data,channel,MicroSec
 
+## 2)
 ## summed WF smoothing:
-def smooth(origindata,meanNum=100,cover_num=1):
+def smooth(origindata,meanNum=100,cover_num=8):
     clib=ctypes.cdll.LoadLibrary("/home/yuehuan/SanDiX/SanDP/sandp/smooth/smooth.so")
     data_smooth=(ctypes.c_double * len(origindata))()
     for i in range(len(origindata)):
