@@ -5,6 +5,8 @@ Created: 07-27-2018
 
 Processor for Analyzing the Data from SanDix Detector.
 
+** Be careful, under developing, maybe not work at current status! **
+
 
 Waveform checking:
 ==========================
