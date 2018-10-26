@@ -7,7 +7,7 @@ Processor for Analyzing the Data from SanDix Detector.
 
 ** Be careful, under developing, maybe not work at current status! **
 
-[#f03c15](https://placehold.it/15/f03c15/000000?text=+) `#f03c15`
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+) `#f03c15`
 
 Waveform checking:
 ==========================
