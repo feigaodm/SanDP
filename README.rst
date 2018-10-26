@@ -11,6 +11,8 @@ Processor for Analyzing the Data from SanDix Detector.
 - ![#c5f015](https://placehold.it/15/c5f015/000000?text=+) `#c5f015`
 - ![#1589F0](https://placehold.it/15/1589F0/000000?text=+) `#1589F0`
 
+![Status: **Not yet implemented**](http://placehold.it/350x65/FF0000/FFFF00.png&text=Not+yet+implemented) 
+
 Waveform checking:
 ==========================
 sandper --waveform --input /rawdata_path/rawdata.dat --event 100
