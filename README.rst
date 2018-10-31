@@ -3,8 +3,10 @@
 
 SanDix Processor (SanDP)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Created: 07-27-2018\\
-Processor for Analyzing the Data from SanDix Detector.\\
+Created: 07-27-2018
+
+Processor for Analyzing the Data from SanDix Detector.
+
 **Be Helmet, may not work at this stage!**
 
 Waveform checking:
