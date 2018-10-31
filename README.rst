@@ -5,17 +5,12 @@ Created: 07-27-2018
 
 Processor for Analyzing the Data from SanDix Detector.
 
-** Be careful, under developing, maybe not work at current status! **
 
-
-Waveform checking:
-==========================
+waveform checking:
 sandper --waveform --input /rawdata_path/rawdata.dat --event 100
 
-Rawdata processing:
-==========================
+
+rawdata processing:
 sandper --process --input /rawdata_path/rawdata.dat --outpath /processed_path/
-
 note: the processed data have same name as raw data with extension of .root instead of .dat
-
 

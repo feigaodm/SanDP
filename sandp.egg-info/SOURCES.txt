@@ -2,6 +2,7 @@ README.rst
 setup.py
 bin/sandper
 sandp/__init__.py
+sandp/calvariables.py
 sandp/peakfinder.py
 sandp/peakproperty.py
 sandp/peakrefine.py

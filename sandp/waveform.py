@@ -17,6 +17,7 @@ from peakrefine import split_S2
 from peakrefine import peak_width
 from peakrefine import accurate_peaks
 from peakrefine import accurate_S1
+from peakrefine import accurate_S2
 
 from configparser import ConfigParser
 cfg = ConfigParser()
@@ -64,8 +65,10 @@ def drawWF(evt, fname):
     print '\n'
     
     S2_split=split_S2(dat_smooth,S2_potential,0.1,1./5)
-    S1_temp,S2=accurate_peaks(dat_smooth,S1_potential,S2_split,trigger_position)
-    S1 = accurate_S1(dat_smooth,S1_temp,S2,s1width_upper_limit)
+    S1,S2=accurate_peaks(dat_smooth,S1_potential,S2_split,trigger_position)
+    S1, S2_temp = accurate_S1(dat_smooth,S1,S2,s1width_upper_limit, nearestS1=400,distanceS1=40)
+    S2 +=S2_temp
+    S2 = accurate_S2(S2)
     
     print 'S1 edges: ',S1
     print 'S2 edges: ',S2
@@ -91,7 +94,7 @@ def drawWF(evt, fname):
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
     plt.plot(sams, channels[0], color='black', linestyle='-', linewidth=1., label = '')
-    plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
+    # plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
     #------------------------------------------------------------------------------------>
     plt.subplot(412)
     
@@ -104,7 +107,7 @@ def drawWF(evt, fname):
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
     plt.plot(sams, channels[1], color='black', linestyle='-', linewidth=1., label = '')
-    plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
+    # plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
     #------------------------------------------------------------------------------------>
     
     plt.subplot(413)
@@ -118,7 +121,7 @@ def drawWF(evt, fname):
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
     plt.plot(sams, channels[2], color='black', linestyle='-', linewidth=1., label = '')
-    plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
+    # plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
     #------------------------------------------------------------------------------------>
     plt.subplot(414)
     
@@ -131,21 +134,21 @@ def drawWF(evt, fname):
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
     plt.plot(sams, channels[3], color='black', linestyle='-', linewidth=1., label = '')
-    plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
+    # plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
     #------------------------------------------------------------------------------------>
     ######################################################################################################:
     ## Summed WF:
     fig, ax = plt.subplots(figsize = (10, 7))
-    plt.xlim(0, samp_len*4/1000.)
-    ## plt.xlim(25,  30)
-    ## plt.ylim(0,  0.5)
-    plt.xlabel('Time [$\mu s$]', fontsize =15)
+    plt.xlim(0, samp_len)
+    # plt.xlim(7500,  12500)
+    # plt.ylim(0,  0.5)
+    plt.xlabel('Samples', fontsize =15)
     plt.ylabel('Amp [V]', fontsize =15)
     plt.grid(True)
     plt.xticks(fontsize=15)
     plt.yticks(fontsize=15)
-    plt.plot(sams*4/1000., dat_raw_temp, color='black', linestyle='-', linewidth=1., label = 'Summed Waveform')
-    plt.plot(sams*4/1000., dat_smooth, color='springgreen', linestyle='-', linewidth=4, alpha = 0.5, label = 'Smoothed Waveform')
+    plt.plot(sams, dat_raw_temp, color='black', linestyle='-', linewidth=1., label = 'Summed Waveform')
+    plt.plot(sams, dat_smooth, color='springgreen', linestyle='-', linewidth=4, alpha = 0.5, label = 'Smoothed Waveform')
     
     ## plot baseline:
     plt.axhline(s1_thre_base*BaseLineSumSigma[0], color='magenta', linestyle='--', linewidth = 1., label = 'S1 Threshold')
@@ -153,11 +156,11 @@ def drawWF(evt, fname):
     ## S1:
     if len(S1) > 0:
         for p1 in range(len(S1)):
-            ax.axvspan(S1[p1][0]*4/1000., S1[p1][1]*4/1000., alpha=0.4, color='magenta', label = 'S1') 
+            ax.axvspan(S1[p1][0], S1[p1][1], alpha=0.4, color='magenta', label = 'S1') 
     ## S2:
     if len(S2) > 0:
         for p2 in range(len(S2)):
-            ax.axvspan(S2[p2][0]*4/1000., S2[p2][1]*4/1000., alpha=0.4, color='yellow', label = 'S2')
+            ax.axvspan(S2[p2][0], S2[p2][1], alpha=0.4, facecolor='yellow', edgecolor = 'black', label = 'S2')
     
     legend = plt.legend(loc='best', shadow=True, fontsize = 10)
     plt.show(block=False)

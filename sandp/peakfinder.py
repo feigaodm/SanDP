@@ -42,15 +42,32 @@ def find_potential_peaks(data_smooth, left_width, right_width, threshold):
             ctypes.c_int(right_width), 
             ctypes.c_double(threshold))
     s_tmp=S1.split(";")
-    if len(s_tmp) > 100: ## if more than 100 peaks find, means the event is very noisy!
-        return []
+    if len(s_tmp) > 50: ## if more than 20 peaks find, means the event is very noisy!
+        s_tmp = s_tmp[:50]
+    else:
+        s_tmp = s_tmp
     del s_tmp[-1]
+    '''
     for i in s_tmp:
         tmp=i.split(",")
-        tmp[0]=int (float(tmp[0]))
-        tmp[1]=int (float(tmp[1]))
-        S.append(tmp) ## S is 2D list contains the [left, right] edge of each Peaks. 
-    
+        if len(tmp) > 1:
+            if 'x' not in tmp[0] and 'x' not in tmp[1]:
+                try:
+                    tmp[0]=int (float(tmp[0]))
+                    tmp[1]=int (float(tmp[1]))
+                    if len(data_smooth) > tmp[0] > 0 and len(data_smooth) > tmp[1] > 0:
+                        S.append(tmp) ## S is 2D list contains the [left, right] edge of each Peaks. 
+                except ValueError:
+                    pass
+    '''
+    for i in s_tmp:
+        tmp=i.split(",")
+        try:
+            tmp[0]=int (float(tmp[0]))
+            tmp[1]=int (float(tmp[1]))
+            S.append(tmp) ## S is 2D list contains the [left, right] edge of each Peaks. 
+        except ValueError:
+            pass
     ## First:  using 1) to roughly fiind all peaks.
     ## Second: call the func to re-fine the left/right edge.
     return accurate_S_boundary(S,data_smooth,threshold/2., threshold*2.)

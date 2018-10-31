@@ -1,3 +1,4 @@
+import operator
 
 ## 1) 
 ## Split potential S2 Peaks: 
@@ -95,60 +96,73 @@ def accurate_peaks(data_smooth,
 def accurate_S1(data_smooth,
                 S1,
                 S2,
-                S1_width):
-                ## nearestS1=100,
-                ## distanceS1=10):
+                S1_width,
+                nearestS1=100,
+                distanceS1=10):
     if len(S2) > 0:
         maxIndex=0
-        ## Calculating the peak position for maximum S2
         for boundary in S2:
             for i in range(boundary[0]+1,boundary[1]):
                 if data_smooth[i] >  data_smooth[maxIndex]:
                     maxIndex=i
-        ## Neglecting all potential S1s after maximum S2
         S1_out_tmp=[]
         for boundary in S1:
             if boundary[1] < maxIndex:
                 S1_out_tmp.append(boundary)
-            
-        return S1_out_tmp
-    else:
-        return S1
-    
 
-    ## Merging nearby S1s for single electron S2s idetification
-    ## Not using currently !
-    '''
-    pool=[]
-    S1_out=[]
-    S2_out=[]
-    maxRiseTime=0
-    for boundary in S1_out_tmp:
-        halfPeak=peak_width(data_smooth,0.5,boundary)
-        if halfPeak[1]-halfPeak[0] > maxRiseTime:
-            maxRiseTime=halfPeak[1]-halfPeak[0]
-        if pool:
-            if (
-                (boundary[1]-pool[-1][0] > nearestS1) or 
-                (boundary[0]-pool[-1][1] > distanceS1) or 
-                (not(5.> max(data_smooth[boundary[0]:boundary[1]])/float(max(data_smooth[pool[-1][0]:pool[-1][-1]]))>1/5.))
-               ):
+        # Then merge nearby S1s for single electron S2s idetification
+        pool=[]
+        S1_out=[]
+        S2_out=[]
+        maxRiseTime=0
+        for boundary in S1_out_tmp:
+            halfPeak = peak_width(data_smooth,0.5,boundary)
+            if halfPeak[1]-halfPeak[0] > maxRiseTime:
+                maxRiseTime=halfPeak[1]-halfPeak[0]
+            if pool:
                 if (
-                    (pool[-1][1]-pool[0][0] < S1_width) or 
-                    ((maxRiseTime <= 50) and (max(data_smooth[pool[-1][0]:pool[-1][-1]])>0.05))
+                    (boundary[1]-pool[-1][0] > nearestS1)   or 
+                    (boundary[0]-pool[-1][1] > distanceS1)  #or 
+                    #(not(5. > max(data_smooth[boundary[0]:boundary[1]])/float(max(data_smooth[pool[-1][0]:pool[-1][-1]])) > 1/5. ))
                    ):
-                    S1_out.append([pool[0][0],pool[-1][-1]])
-                else :
-                    S2_out.append([pool[0][0],pool[-1][-1]])
+                    if(
+                       (pool[-1][1]-pool[0][0] < S1_width) 
+                       # or ((maxRiseTime <= 25) and (max(data_smooth[pool[-1][0]:pool[-1][-1]])>0.05))
+                      ):
+                        S1_out.append([pool[0][0],pool[-1][-1]])
+                    else :
+                        S2_out.append([pool[0][0],pool[-1][-1]])
+                    pool=[]
+            pool.append(boundary)
+        if pool:
+            if (pool[-1][1]-pool[0][0]) < S1_width:
+                S1_out.append([pool[0][0],pool[-1][-1]])
+            else :
+                S2_out.append([pool[0][0],pool[-1][-1]])
+    else:
+        S1_out = S1
+        S2_out = []
+    
+    return S1_out,S2_out
+
+## 5)
+## Merged S2 together: 
+## -------------------------------->
+
+def accurate_S2(S2):
+    pool = []
+    S2_final = []
+    S2 = sorted(S2, key=operator.itemgetter(0))
+
+    for boundary in S2:
+        if pool:
+            if (boundary[0]-pool[-1][1] >0):
+                S2_final.append([pool[0][0],pool[-1][-1]])
                 pool=[]
         pool.append(boundary)
-    ## The last pool to be decided as S1 or S2 
+    
     if pool:
-        if (pool[-1][1]-pool[0][0]) < S1_width:
-            S1_out.append([pool[0][0],pool[-1][-1]])
-        else :
-            S2_out.append([pool[0][0],pool[-1][-1]])
-    return S1_out,S2_out
-    '''
+        S2_final.append([pool[0][0],pool[-1][-1]])
 
-
+    return S2_final
+   

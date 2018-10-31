@@ -22,6 +22,8 @@ from peakrefine import split_S2
 from peakrefine import peak_width
 from peakrefine import accurate_peaks
 from peakrefine import accurate_S1
+from peakrefine import accurate_S2
+
 from peakproperty import Entropy
 from peakproperty import Uniformity
 from peakproperty import integral
@@ -146,6 +148,8 @@ def process(filename, outpath):
     ## for event_number in range(3000, 3001):
         EventID[0]=event_number
         
+        ## print '------------------------------------------------------- ',event_number
+        
         ## accumulating running time:
         t_passed += time.time()-time_startc
         time_startc = time.time();
@@ -176,17 +180,24 @@ def process(filename, outpath):
                                             max(0.001,s2_thre_base*BaseLineSumSigma[0])) 
         
         ## accurate S1, S2:
-        S2_split = split_S2(data_smooth,S2_potential,0.1,1./5)
-        S1_temp,S2 = accurate_peaks(data_smooth,S1_potential,S2_split,trigger_position)
-        S1 = accurate_S1(data_smooth,S1_temp,S2,s1width_upper_limit)
+        S2_split=split_S2(data_smooth,S2_potential,0.1,1./5)
+        S1,S2=accurate_peaks(data_smooth,S1_potential,S2_split,trigger_position)
+        S1, S2_temp = accurate_S1(data_smooth,S1,S2,s1width_upper_limit, nearestS1=400,distanceS1=40)
+        S2 += S2_temp
+        S2 = accurate_S2(S2)
         
         ## print S1
         ## print S2
         
         ## Number of S1 and S2 peaks:
         NbS1Peaks[0]=len(S1)    
-        NbS2Peaks[0]=len(S2)    
+        NbS2Peaks[0]=len(S2) 
         
+        if NbS1Peaks[0]>100:
+            NbS1Peaks[0] = 100
+        if NbS2Peaks[0]>100:
+            NbS2Peaks[0] = 100
+         
         ## Baseline for each channel:
         for i in range(len(channel)):
             BaseLineChannel[i]=np.mean(channel[i][:nsamp_base])
