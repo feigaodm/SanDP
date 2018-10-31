@@ -16,4 +16,5 @@ sandper --waveform --input /rawdata_path/rawdata.dat --event 100
 Rawdata processing:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sandper --process --input /rawdata_path/rawdata.dat --outpath /processed_path/
+
 note: the processed data have same name as raw data with extension of .root instead of .dat
