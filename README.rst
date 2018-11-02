@@ -22,3 +22,14 @@ note: the processed data have same name as raw data with extension of .root inst
 Instructions:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 detail instruction will come soon... ...
+
+
+Event Structure:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#### TDirectory::events/events
+| Name | type | description |  
+| --- | --- | --- |
+| eventid | int | event number |
+| ntpmthits | int | |
+| nbpmthits | int | |
+| pmthits | int | |
