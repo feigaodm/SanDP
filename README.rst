@@ -35,3 +35,5 @@ Event Structure:
 | ntpmthits | int | |
 | nbpmthits | int | |
 | pmthits | int | |
+| etot | float | total G4 energy deposit in this event |
+| nsteps | int | number of G4 steps |
