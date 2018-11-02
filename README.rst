@@ -24,16 +24,3 @@ Instructions:
 detail instruction will come soon... ...
 
 
-Event Structure:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-#### TDirectory::events/events
-| Name | type | description |  
-| --- | --- | --- |
-| eventid | int | event number |
-| ntpmthits | int | |
-| nbpmthits | int | |
-| pmthits | int | |
-| etot | float | total G4 energy deposit in this event |
-| nsteps | int | number of G4 steps |
