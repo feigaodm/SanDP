@@ -5,7 +5,7 @@ setup(
     name = "sandp",
     version = sandp.__version__,
     description = "processor for SanDix detector",
-    author = "YWei, Qiang",
+    author = "YWei, JYe",
     author_email = "ywei@physics.ucsd.edu, yejingqiang1992@gmail.com",
     url = "https://wiki.nigroup.ucsd.edu/doku.php?id=sandix",
     packages = ['sandp','sandp.config', 'sandp.data'],
