@@ -1,16 +1,26 @@
-SanDix Processor (SanDP)
-==========================
+.. image:: bin/sandix_logo.png
 
+
+SanDix Processor (SanDP)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Created: 07-27-2018
 
 Processor for Analyzing the Data from SanDix Detector.
 
-======
-waveform checking:
+**Be Helmet, may not work properly at this stage!!!!!!**
+
+Waveform checking:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sandper --waveform --input /rawdata_path/rawdata.dat --event 100
 
-======
-rawdata processing:
+Rawdata processing:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sandper --process --input /rawdata_path/rawdata.dat --outpath /processed_path/
+
 note: the processed data have same name as raw data with extension of .root instead of .dat
+
+Instructions:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+detail instruction will come soon... ...
+
 

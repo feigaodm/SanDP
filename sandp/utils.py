@@ -24,11 +24,11 @@ def load_dataframe(filename):
     data_2 = pd.DataFrame(root2array(filename, branches=array_branches))
 
     data = pd.concat([data_1[scalar_branches], data_2], axis=1)
-
+    
     # add alias
     data['drift_time'] = (data['S2sPeak'] - data['S1sPeak']) * 4 / 1000  # us
     data['S2sLowWidth'] = data['S2sLowWidth'] * 4 / 1000  # us
     data['S2sWidth'] = data['S2sWidth'] * 4 / 1000  # us
     data['r'] = np.sqrt(data['S2sPosX']**2 + data['S2sPosY']**2)
-
+    
     return data
