@@ -7,6 +7,7 @@ sandp/peakfinder.py
 sandp/peakproperty.py
 sandp/peakrefine.py
 sandp/rawdata.py
+sandp/utils.py
 sandp/waveform.py
 sandp.egg-info/PKG-INFO
 sandp.egg-info/SOURCES.txt

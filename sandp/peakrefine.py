@@ -156,7 +156,7 @@ def accurate_S2(S2):
 
     for boundary in S2:
         if pool:
-            if (boundary[0]-pool[-1][1] >0):
+            if (boundary[0]-pool[-1][1] >=0):
                 S2_final.append([pool[0][0],pool[-1][-1]])
                 pool=[]
         pool.append(boundary)

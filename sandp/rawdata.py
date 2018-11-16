@@ -17,7 +17,7 @@ from peakfinder import find_potential_peaks
 
 from configparser import ConfigParser
 cfg = ConfigParser()
-cfg.read('/home/yuehuan/SanDiX/SanDP/sandp/config/sandix.ini')
+cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
 
 nsamps = int (cfg['peaks']['nsamps'])
 nchs =   int (cfg['peaks']['nchs'])
@@ -84,13 +84,15 @@ def get_raw(event_number, filename):
 
 ## 2)
 ## summed WF smoothing:
-def smooth(origindata,meanNum=100,cover_num=3):
-    clib=ctypes.cdll.LoadLibrary("/home/yuehuan/SanDiX/SanDP/sandp/smooth/smooth.so")
+def smooth(origindata,meanNum=100,cover_num=5):
+    clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/smooth/smooth.so")
     data_smooth=(ctypes.c_double * len(origindata))()
     for i in range(len(origindata)):
         data_smooth[i]=ctypes.c_double(origindata[i])
     clib.smooth(ctypes.byref(data_smooth),ctypes.c_int(meanNum),ctypes.c_int(len(data_smooth)),ctypes.c_int(cover_num))
+    
     for i in range(cover_num):
         data_smooth[i]=0
         data_smooth[i-1]=0
+    
     return data_smooth

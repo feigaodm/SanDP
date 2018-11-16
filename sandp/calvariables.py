@@ -34,7 +34,7 @@ from peakproperty import sort_area
 
 from configparser import ConfigParser
 cfg = ConfigParser()
-cfg.read('/home/yuehuan/SanDiX/SanDP/sandp/config/sandix.ini')
+cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
 
 nsamps = int (cfg['peaks']['nsamps'])
 nchs =   int (cfg['peaks']['nchs'])
@@ -119,7 +119,7 @@ T1.Branch("S2sUniformity",S2sUniformity,"S2sUniformity[NbS2Peaks]/F")
 ## processing the raw_data:
 def process(filename, outpath):
     ## Output ROOT File：
-    outfile = TFile(outpath + '/' + filename[-25:-4]+'.root',"RECREATE")
+    outfile = TFile(outpath + '/' + filename[-26:-4]+'.root',"RECREATE")
     
     ## Total number of events:
     infile = open(filename)
@@ -260,8 +260,9 @@ def process(filename, outpath):
         ## Peak X Y Position Uniformity and Reconstruction:
         for i in range (NbS2Peaks[0]):
             if(S2sTot[i]>10):
-                S2sPosX[i] = (S2s[0][S2s_Key[i]]+S2s[1][S2s_Key[i]]-S2s[2][S2s_Key[i]]-S2s[3][S2s_Key[i]])/S2sTot[i]      
-                S2sPosY[i] = (S2s[0][S2s_Key[i]]-S2s[1][S2s_Key[i]]-S2s[2][S2s_Key[i]]+S2s[3][S2s_Key[i]])/S2sTot[i]      
+                S2sPosX[i] = (S2s[0][S2s_Key[i]]+S2s[2][S2s_Key[i]] - S2s[1][S2s_Key[i]] - S2s[3][S2s_Key[i]])/S2sTot[i]      
+                S2sPosY[i] = (S2s[0][S2s_Key[i]]-S2s[2][S2s_Key[i]] + S2s[1][S2s_Key[i]] - S2s[3][S2s_Key[i]])/S2sTot[i]
+
 
         ## S1s and S2s coincidence levels:
         for i in range (NbS2Peaks[0]):
