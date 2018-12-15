@@ -12,12 +12,14 @@ import time
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from sandp import full_path
 
 from peakfinder import find_potential_peaks
 
 from configparser import ConfigParser
 cfg = ConfigParser()
-cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
+#cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
+cfg.read(full_path('config/sandix.ini'))
 
 nsamps = int (cfg['peaks']['nsamps'])
 nchs =   int (cfg['peaks']['nchs'])
@@ -85,7 +87,8 @@ def get_raw(event_number, filename):
 ## 2)
 ## summed WF smoothing:
 def smooth(origindata,meanNum=100,cover_num=5):
-    clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/smooth/smooth.so")
+    #clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/smooth/smooth.so")
+    clib = ctypes.cdll.LoadLibrary(full_path("smooth/smooth.so"))
     data_smooth=(ctypes.c_double * len(origindata))()
     for i in range(len(origindata)):
         data_smooth[i]=ctypes.c_double(origindata[i])

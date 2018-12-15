@@ -30,8 +30,10 @@ from peakproperty import integral
 from peakproperty import sort_area
 
 from configparser import ConfigParser
+from sandp import full_path
 cfg = ConfigParser()
-cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
+#cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
+cfg.read(full_path('config/sandix.ini'))
 
 s1width_lower_limit = int (cfg['peaks']['s1width_lower_limit'])
 s1width_upper_limit = int (cfg['peaks']['s1width_upper_limit'])
@@ -182,6 +184,7 @@ def drawWF(evt, fname):
     plt.grid(True)
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
+    print(len(sams), len(channels[0]))
     plt.plot(sams, channels[0], color='black', linestyle='-', linewidth=.5, label = '')
     # plt.axvline(6500, color='magenta', linestyle='--', linewidth = 1)
     #------------------------------------------------------------------------------------>
@@ -272,6 +275,7 @@ def drawWF(evt, fname):
 
     plt.title(fname[7:-4] + ' event ' + str(evt))
     legend = plt.legend(loc='best', shadow=True, fontsize = 12.5)
+    plt.ylim(0,)
     plt.show(block=False)
     raw_input("Hit Enter To Close")
     plt.close()

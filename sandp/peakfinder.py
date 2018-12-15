@@ -9,6 +9,7 @@ import math
 import ctypes
 import time
 import numpy as np
+from sandp import full_path
 
 ## Find any potenrial peaks with required width:
 def find_potential_peaks(data_smooth, left_width, right_width, threshold):
@@ -30,7 +31,8 @@ def find_potential_peaks(data_smooth, left_width, right_width, threshold):
     
     ## 1) roughly find the edge for each peak.
     S=[]
-    clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/findPoWa/findPoWa.so")
+    #clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/findPoWa/findPoWa.so")
+    clib = ctypes.cdll.LoadLibrary(full_path("findPoWa/findPoWa.so"))
     data_c=(ctypes.c_double * len(data_smooth))()
     for i in range(len(data_smooth)):
         data_c[i]=ctypes.c_double(data_smooth[i])

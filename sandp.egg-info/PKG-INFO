@@ -1,10 +1,10 @@
 Metadata-Version: 1.0
 Name: sandp
-Version: 0.1
+Version: 1.0
 Summary: processor for SanDix detector
 Home-page: https://wiki.nigroup.ucsd.edu/doku.php?id=sandix
-Author: Yuehuan Wei
-Author-email: ywei@physics.ucsd.edu
+Author: YWei, JYe
+Author-email: ywei@physics.ucsd.edu, yejingqiang1992@gmail.com
 License: UNKNOWN
 Description: UNKNOWN
 Platform: UNKNOWN
