@@ -33,8 +33,10 @@ from peakproperty import sort_area
 ##################################################################################>>>>>>
 
 from configparser import ConfigParser
+from sandp import full_path
 cfg = ConfigParser()
-cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
+#cfg.read('/home/nilab/Processor/SanDP/sandp/config/sandix.ini')
+cfg.read(full_path('config/sandix.ini'))
 
 nsamps = int (cfg['peaks']['nsamps'])
 nchs =   int (cfg['peaks']['nchs'])
