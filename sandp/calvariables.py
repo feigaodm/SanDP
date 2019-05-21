@@ -83,6 +83,7 @@ S1sRiseTime, S2sRiseTime=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0])    
 S1sDropTime, S2sDropTime=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0])      # peak drop time
 S1sTot, S2sTot=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0])                # peak area
 S1sCoin, S2sCoin=array("i",maxpeaks*[0]),array("i",maxpeaks*[0])                  # number of coincidence channels
+S2sPMT=array('f',maxpeaks*[0])  # main s2 size in each PMT
 
 #=== Branches ===#
 T1.Branch("EventID",EventID,"EventID/I")
@@ -113,7 +114,8 @@ T1.Branch("S2sCoin",S2sCoin,"S2sCoin[NbS2Peaks]/I")
 T1.Branch("S1sEntropy",S1sEntropy,"S1sEntropy[NbS1Peaks]/F")  
 T1.Branch("S2sEntropy",S2sEntropy,"S2sEntropy[NbS2Peaks]/F")  
 T1.Branch("S1sUniformity",S1sUniformity,"S1sUniformity[NbS1Peaks]/F")  
-T1.Branch("S2sUniformity",S2sUniformity,"S2sUniformity[NbS2Peaks]/F") 
+T1.Branch("S2sUniformity",S2sUniformity,"S2sUniformity[NbS2Peaks]/F")
+T1.Branch('S2sPMT',S2sPMT,'S2sPMT[nchannels]/F')
 
 ##################################################################################>>>>>>
 ##################################################################################>>>>>>
@@ -265,6 +267,10 @@ def process(filename, outpath):
                 S2sPosX[i] = (S2s[0][S2s_Key[i]]+S2s[2][S2s_Key[i]] - S2s[1][S2s_Key[i]] - S2s[3][S2s_Key[i]])/S2sTot[i]      
                 S2sPosY[i] = (S2s[0][S2s_Key[i]]-S2s[2][S2s_Key[i]] + S2s[1][S2s_Key[i]] - S2s[3][S2s_Key[i]])/S2sTot[i]
 
+        # Main S2 size in each PMT
+        for i in range(len(channel)):
+            if len(S2s_Key) > 0:
+                S2sPMT[i]=S2s[i][S2s_Key[0]]
 
         ## S1s and S2s coincidence levels:
         for i in range (NbS2Peaks[0]):
@@ -282,7 +288,7 @@ def process(filename, outpath):
             S1sUniformity[i]=Uniformity(nchannels[0],PMTgain,channel,BaseLineChannel,S1[S1s_Key[i]],threshold=0.3) 
 
         for i in range (NbS2Peaks[0]):
-            S2sUniformity[i]=Uniformity(nchannels[0],PMTgain,channel,BaseLineChannel,S2[S2s_Key[i]],threshold=0.3) 
+            S2sUniformity[i]=Uniformity(nchannels[0],PMTgain,channel,BaseLineChannel,S2[S2s_Key[i]],threshold=0.3)
          
         ## Filling the Tree:
         T1.Fill()

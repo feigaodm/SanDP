@@ -11,7 +11,7 @@ def load_dataframe(filename):
     data_1 = pd.DataFrame(root2array(filename, 'T1'))
 
     array_branches = []
-    scalar_branches = ['BaseLineChannel', 'BaseLineChannelSigma']  # these two are not scalar
+    scalar_branches = ['BaseLineChannel', 'BaseLineChannelSigma', 'S2sPMT']  # these two are not scalar
     for name in data_1.columns.values:
         if name in scalar_branches:
             continue
