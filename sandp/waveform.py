@@ -273,7 +273,7 @@ def drawWF(evt, fname):
     ## Test:
     ## print 'Max smooth: ',np.max(dat_smooth)
 
-    plt.title(fname[7:-4] + ' event ' + str(evt))
+    plt.title(fname[-19:-4] + ' event ' + str(evt))
     legend = plt.legend(loc='best', shadow=True, fontsize = 12.5)
     plt.ylim(0,)
     plt.show(block=False)

@@ -7,7 +7,7 @@ import os
 
 __author__ = 'Yuehuan Wei'
 __email__ = 'ywei@physics.ucsd.edu'
-__version__ = '1.0'
+__version__ = '1.1'
 
 THISDIR = os.path.dirname(os.path.realpath(__file__))
 
