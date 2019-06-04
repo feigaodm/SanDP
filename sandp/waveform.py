@@ -138,6 +138,9 @@ def drawWF(evt, fname):
         for j in range(len(channels)):
             S1sTot_tmp[i]+=S1s[j][i]
 
+    # print s2 size
+    print('S2 area: ', S2sTot_tmp)
+
     ## S1 and S2 sort index:
     S1s_Key=sort_area(S1sTot_tmp)
     S2s_Key=sort_area(S2sTot_tmp)
