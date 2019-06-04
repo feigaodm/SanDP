@@ -83,7 +83,7 @@ def drawWF(evt, fname):
     
     S2_split=split_S2(dat_smooth,S2_potential,0.1,1./5)
     print('S2_split', S2_split)
-    S1,S2=accurate_peaks(dat_smooth,S1_potential,S2_split,trigger_position)
+    S1,S2=accurate_peaks(dat_smooth,S1_potential,S2_split,s1width_upper_limit)
     print('accurate_peaks')
     print(S1, S2)
     S1, S2_temp = accurate_S1(dat_smooth,S1,S2,s1width_upper_limit, nearestS1=400,distanceS1=40)

@@ -5,8 +5,8 @@ import os
 
 # -*- coding: utf-8 -*-
 
-__author__ = 'Yuehuan Wei'
-__email__ = 'ywei@physics.ucsd.edu'
+__author__ = 'Yuehuan Wei, Jingqiang Ye'
+__email__ = 'ywei@physics.ucsd.edu, yejingqiang1992@gmail.com'
 __version__ = '1.1'
 
 THISDIR = os.path.dirname(os.path.realpath(__file__))
