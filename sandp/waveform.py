@@ -142,6 +142,9 @@ def drawWF(evt, fname):
     S1s_Key=sort_area(S1sTot_tmp)
     S2s_Key=sort_area(S2sTot_tmp)
 
+    # print s2 size
+    print('S2 area: ', S2sTot_tmp)
+
     ## Defining S2sTot and S1sTot:
     maxpeaks=100
     S1sTot, S2sTot=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0]) 
