@@ -83,7 +83,7 @@ S1sRiseTime, S2sRiseTime=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0])    
 S1sDropTime, S2sDropTime=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0])      # peak drop time
 S1sTot, S2sTot=array("f",maxpeaks*[0.0]),array("f",maxpeaks*[0.0])                # peak area
 S1sCoin, S2sCoin=array("i",maxpeaks*[0]),array("i",maxpeaks*[0])                  # number of coincidence channels
-S2sPMT=array('f',maxpeaks*[0])  # main s2 size in each PMT
+S2sPMT=array('f',maxpeaks*[0.0])  # main s2 size in each PMT
 
 #=== Branches ===#
 T1.Branch("EventID",EventID,"EventID/I")

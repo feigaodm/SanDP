@@ -261,7 +261,7 @@ def drawWF(evt, fname):
         ## Marker all S2s
         for p2 in range(len(S2)):
             if p2 == 0:
-                #ax.axvspan(peaklow[p2][0], peaklow[p2][2], alpha=0.4, facecolor='yellow', edgecolor = 'black', label = 'S2')
+                #ax.axvspan(peaklow[p2][0], peaklow[p2][2], alpha=0.4, facecolor='magenta', edgecolor = 'black', label = 'S2')
                 ax.axvspan(S2[p2][0], S2[p2][1], alpha=0.4, facecolor='yellow', edgecolor='black', label='S2')
                 #print ('========> ',peaklow[p2][0], peaklow[p2][2])
             else:
