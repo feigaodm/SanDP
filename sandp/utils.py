@@ -2,6 +2,7 @@ from root_numpy import root2array
 import pandas as pd
 import numpy as np
 import os
+from textwrap import dedent
 
 def load_dataframe(filename, amplifier=10):
     '''
@@ -99,3 +100,27 @@ def load_path(path, amplifier=10):
             data_tmp = load_path(path_)
             data = pd.concat([data, data_tmp], ignore_index=True)
     return data
+
+def code_hider():
+    """
+    Stolen from hax
+    Make a button in the jupyter notebook to hide all code
+    """
+    # Stolen from stackoverflow... forget which question
+    # I would really like these buttons for every individual cell.. but I don't know how
+    from IPython.display import HTML    # Please keep here, don't want hax to depend on ipython!
+    return HTML(dedent('''
+                       <script>
+                       code_show=true
+                       function code_toggle() {
+                        if (code_show){
+                        $('div.input').hide();
+                          } else {
+                        $('div.input').show();
+                        }
+                        code_show = !code_show
+                       }
+                       $( document ).ready(code_toggle);
+                       </script>
+                       <form action="javascript:code_toggle()"><input type="submit"
+                       value="Show/hide  all code in this notebook"></form>'''))

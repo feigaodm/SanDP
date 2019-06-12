@@ -51,7 +51,7 @@ PMTgain=[float (cfg['gains']['ch0_gain']),
          float (cfg['gains']['ch2_gain']),
          float (cfg['gains']['ch3_gain'])]
 
-def drawWF(evt, fname):
+def drawWF(evt, fname, savepath=False):
     dat_raw,channels,MicroSec = get_raw(evt, fname)
     dat_smooth = smooth(dat_raw)
     
@@ -257,7 +257,7 @@ def drawWF(evt, fname):
             else:
                 ax.axvspan(S1[p1][0], S1[p1][1], alpha=0.4, color='magenta', label = '') 
         ## Marker the Largest S1 ===>
-        plt.text(S1sPeak[0], dat_smooth[int(S1sPeak[0])], 'S1[0]', fontsize=10, color='blue', fontweight = 'bold', zorder = 100)
+        plt.text(S1sPeak[0]+200, dat_smooth[int(S1sPeak[0])], 'S1[0]\n\n%.1f PE' %(S1sTot[0]), fontsize=10, color='blue', fontweight = 'bold', zorder = 100)
         
     ## S2:
     if len(S2) > 0:
@@ -271,14 +271,19 @@ def drawWF(evt, fname):
                 ax.axvspan(S2[p2][0], S2[p2][1], alpha=0.4, facecolor='yellow', edgecolor = 'black', label = '')
                 #print ('========> ',peaklow[p2][0], peaklow[p2][2])
         ## Marker the Largest S2 ===>
-        plt.text(S2sPeak[0], dat_smooth[int(S2sPeak[0])], 'S2[0]', fontsize=10, color='blue', fontweight = 'bold', zorder = 100)
+        plt.text(S2sPeak[0]+200, dat_smooth[int(S2sPeak[0])], 'S2[0]\n\n%.1f PE' %(S2sTot[0]), fontsize=10, color='blue', fontweight = 'bold', zorder = 100)
     
     ## Test:
     ## print 'Max smooth: ',np.max(dat_smooth)
 
     plt.title(fname[-19:-4] + ' event ' + str(evt))
-    legend = plt.legend(loc='best', shadow=True, fontsize = 12.5)
+    plt.legend(loc='best', shadow=True, fontsize = 12.5)
     plt.ylim(0,)
-    plt.show(block=False)
-    raw_input("Hit Enter To Close")
-    plt.close()
+    if savepath:
+        name = fname[:-4] + '_event' + str(evt) + '.png'
+        plt.savefig(os.path.join(savepath, name), dpi=300)
+        plt.close()
+    else:
+        plt.show(block=False)
+        raw_input("Hit Enter To Close")
+        plt.close()
