@@ -40,7 +40,7 @@ It should contains the following line:
 
 .. code::
 
-  export PATH=/home/<username>/anaconda3/bin:$PATH 
+  export PATH="/home/<username>/anaconda3/bin:$PATH" 
   
 If not, add the line above to ``.bashrc`` file and source it by ``source ~/.bashrc``
 
