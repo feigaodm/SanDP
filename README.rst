@@ -67,7 +67,7 @@ Install SanDP
   
   git clone https://github.com/darkmatter-ucsd/SanDP.git
   
-Enter your user name and password for GitHub as `SanDP` is a private repository. We recommend you to _`add your SSH to GitHub <https://help.github.com/en/enterprise/2.15/user/articles/adding-a-new-ssh-key-to-your-github-account>`_ to access your private repository without password.
+Enter your user name and password for GitHub as `SanDP` is a private repository. We recommend you to `add your SSH to GitHub <https://help.github.com/en/enterprise/2.15/user/articles/adding-a-new-ssh-key-to-your-github-account>`_ to access your private repository without password.
 
 Then install the package by:
 
