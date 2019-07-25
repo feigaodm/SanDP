@@ -50,7 +50,7 @@ After Anaconda is installed, we can install our environment. Be noted that SanDP
 
 .. code::
 
-  conda create -n <your_environment> python=2.7 root numpy scipy matplotlib pandas libgcc jupyter
+  conda create -n <your_environment> python=2.7 root numpy scipy matplotlib pandas libgcc jupyter ipykernel configparser libgfortran==1
   
 Then activate your environment by
 
