@@ -16,3 +16,5 @@ sandp.egg-info/top_level.txt
 sandp/config/__init__.py
 sandp/config/sandix.ini
 sandp/data/__init__.py
+sandp/plugin/LocateData.py
+sandp/plugin/__init__.py
