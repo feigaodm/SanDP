@@ -8,7 +8,7 @@ setup(
     author = "YWei, JYe",
     author_email = "ywei@physics.ucsd.edu, yejingqiang1992@gmail.com",
     url = "https://wiki.nigroup.ucsd.edu/doku.php?id=sandix",
-    packages = ['sandp','sandp.config', 'sandp.data'],
+    packages = ['sandp','sandp.config', 'sandp.data', 'sandp.plugin'],
     package_dir={'sandp': 'sandp'},
     package_data={'sandp': ['config/*.ini']},
     scripts=['bin/sandper']
