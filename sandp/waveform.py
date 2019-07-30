@@ -52,6 +52,7 @@ PMTgain=[float (cfg['gains']['ch0_gain']),
          float (cfg['gains']['ch3_gain'])]
 
 def drawWF(evt, fname, savepath=False):
+    print savepath
     dat_raw,channels,MicroSec = get_raw(evt, fname)
     dat_smooth = smooth(dat_raw)
     
@@ -280,7 +281,7 @@ def drawWF(evt, fname, savepath=False):
     plt.legend(loc='best', shadow=True, fontsize = 12.5)
     plt.ylim(0,)
     if savepath:
-        name = fname[:-4] + '_event' + str(evt) + '.png'
+        name = fname[-26:-4] + '_event_' + str(evt) + '.png'
         plt.savefig(os.path.join(savepath, name), dpi=300)
         plt.close()
     else:
