@@ -7,6 +7,7 @@ from .. import THISDIR
 class base(object):
     def __init__(self, name):
         self.name = name
+        self.off_set = -7 * 3600  # sd time offset
 
     @staticmethod
     def str_to_unix(string):
@@ -32,9 +33,8 @@ class base(object):
 
 
 class Path(base):
-    @staticmethod
-    def str_to_unix(string):
-        unix = int(dt.datetime.strptime(string, '%Y%m%d%H%M').strftime("%s"))
+    def str_to_unix(self, string):
+        unix = int(dt.datetime.strptime(string, '%Y%m%d%H%M').strftime("%s")) + self.off_set
         return unix
 
     @property
@@ -43,9 +43,8 @@ class Path(base):
         return ret
 
 class File(base):
-    @staticmethod
-    def str_to_unix(string):
-        unix = int(dt.datetime.strptime(string, '%Y%m%d%H%M%S').strftime("%s"))
+    def str_to_unix(self, string):
+        unix = int(dt.datetime.strptime(string, '%Y%m%d%H%M%S').strftime("%s")) + self.off_set
         return unix
 
     @property
