@@ -67,18 +67,18 @@ class DataLocation():
     def get_location(self, event_time):
         ret_path, ret_file = None, None
         for path_name, path_info in self.data_location.items():
-            if event_time > path_info['time']:
+            if event_time >= path_info['time']:
                 ret_path = path_name
             else:
                 path_info = self.data_location[ret_path]
                 for file_name, file_time in path_info['file_info'].items():
-                    if event_time > file_time:
+                    if event_time >= file_time:
                         ret_file = file_name
                     else:
                         break
 
-        assert ret_file is not None, "Something wrong with path"
-        assert ret_path is not None, "Something wrong with file"
+        assert ret_file is not None, "Something wrong with file"
+        assert ret_path is not None, "Something wrong with path"
 
         ret = os.path.join(self.config[self.datatype]['base_path'], os.path.join(ret_path, ret_file))
         return ret
