@@ -156,7 +156,7 @@ def process(filename, outpath):
         
         ## accumulating running time:
         t_passed += time.time()-time_startc
-        time_startc = time.time();
+        time_startc = time.time()
         if (event_number%500==0) and (event_number!=0):
             t_left = t_passed/float(event_number)*(totN-event_number)
             print ("Job progress : " +str(float(event_number)/float(totN)*100) 
@@ -185,7 +185,7 @@ def process(filename, outpath):
         
         ## accurate S1, S2:
         S2_split=split_S2(data_smooth,S2_potential,0.1,1./5)
-        S1,S2=accurate_peaks(data_smooth,S1_potential,S2_split,trigger_position)
+        S1, S2=accurate_peaks(data_smooth,S1_potential,S2_split,trigger_position)
         S1, S2_temp = accurate_S1(data_smooth,S1,S2,s1width_upper_limit, nearestS1=400,distanceS1=40)
         S2 += S2_temp
         S2 = accurate_S2(S2)
