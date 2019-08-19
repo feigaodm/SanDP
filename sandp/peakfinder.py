@@ -37,7 +37,7 @@ def find_potential_peaks(data_smooth, left_width, right_width, threshold):
     for i in range(len(data_smooth)):
         data_c[i]=ctypes.c_double(data_smooth[i])
     func=clib.findPotentialWave
-    func.restype=ctypes.c_char_p;
+    func.restype=ctypes.c_char_p
     S1=func(ctypes.byref(data_c), 
             ctypes.c_int(len(data_c)),
             ctypes.c_int(left_width), 
