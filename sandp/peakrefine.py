@@ -76,16 +76,12 @@ def peak_width(data_smooth,
 def accurate_peaks(data_smooth,
                    S1_potential,
                    S2_split,
-                   trigger_pos=1000):
+                   S1_width):
     S1=S1_potential
     S2=[]
     for boundary in S2_split:
-        halfPeak = peak_width(data_smooth,0.5,boundary)
-        if (halfPeak[1] < trigger_pos) and ((boundary[1]-boundary[0] < 50) or (halfPeak[1]-halfPeak[0] <= 25)):
-            if boundary[1] < trigger_pos :
-                S1.append(boundary)
-            elif boundary[1] - boundary[0] > 50:
-                S2.append(boundary)
+        if boundary[1] - boundary[0] < S1_width:
+            S1.append(boundary)
         else:
             S2.append(boundary)
     return S1,S2
@@ -99,51 +95,54 @@ def accurate_S1(data_smooth,
                 S1_width,
                 nearestS1=100,
                 distanceS1=10):
+
+    # Merge nearby S1s for single electron S2s idetification
+    pool=[]
+    S1_out=[]
+    S2_out= []
+    maxRiseTime=0
+    for boundary in S1:
+        halfPeak = peak_width(data_smooth,0.5,boundary)
+        if halfPeak[1]-halfPeak[0] > maxRiseTime:
+            maxRiseTime=halfPeak[1]-halfPeak[0]
+        if pool:
+            if (
+                (boundary[1]-pool[-1][0] > nearestS1)   or
+                (boundary[0]-pool[-1][1] > distanceS1)  #or
+                #(not(5. > max(data_smooth[boundary[0]:boundary[1]])/float(max(data_smooth[pool[-1][0]:pool[-1][-1]])) > 1/5. ))
+               ):
+                if(
+                   (pool[-1][1]-pool[0][0] < S1_width)
+                   # or ((maxRiseTime <= 25) and (max(data_smooth[pool[-1][0]:pool[-1][-1]])>0.05))
+                  ):
+                    S1_out.append([pool[0][0],pool[-1][-1]])
+                else :
+                    S2_out.append([pool[0][0],pool[-1][-1]])
+                pool=[]
+        pool.append(boundary)
+    if pool:
+        # tell if the merged signal is S1 or S2 by width
+        if (pool[-1][1]-pool[0][0]) < S1_width:
+            S1_out.append([pool[0][0],pool[-1][-1]])
+        else :
+            S2_out.append([pool[0][0],pool[-1][-1]])
+
+    # remove S1s after Main S2
     if len(S2) > 0:
         maxIndex=0
         for boundary in S2:
             for i in range(boundary[0]+1,boundary[1]):
-                if data_smooth[i] >  data_smooth[maxIndex]:
+                if data_smooth[i] > data_smooth[maxIndex]:
                     maxIndex=i
-        S1_out_tmp=[]
-        for boundary in S1:
+        S1_out_final=[]
+        for boundary in S1_out:
             if boundary[1] < maxIndex:
-                S1_out_tmp.append(boundary)
-
-        # Then merge nearby S1s for single electron S2s idetification
-        pool=[]
-        S1_out=[]
-        S2_out=[]
-        maxRiseTime=0
-        for boundary in S1_out_tmp:
-            halfPeak = peak_width(data_smooth,0.5,boundary)
-            if halfPeak[1]-halfPeak[0] > maxRiseTime:
-                maxRiseTime=halfPeak[1]-halfPeak[0]
-            if pool:
-                if (
-                    (boundary[1]-pool[-1][0] > nearestS1)   or 
-                    (boundary[0]-pool[-1][1] > distanceS1)  #or 
-                    #(not(5. > max(data_smooth[boundary[0]:boundary[1]])/float(max(data_smooth[pool[-1][0]:pool[-1][-1]])) > 1/5. ))
-                   ):
-                    if(
-                       (pool[-1][1]-pool[0][0] < S1_width) 
-                       # or ((maxRiseTime <= 25) and (max(data_smooth[pool[-1][0]:pool[-1][-1]])>0.05))
-                      ):
-                        S1_out.append([pool[0][0],pool[-1][-1]])
-                    else :
-                        S2_out.append([pool[0][0],pool[-1][-1]])
-                    pool=[]
-            pool.append(boundary)
-        if pool:
-            if (pool[-1][1]-pool[0][0]) < S1_width:
-                S1_out.append([pool[0][0],pool[-1][-1]])
-            else :
-                S2_out.append([pool[0][0],pool[-1][-1]])
+                S1_out_final.append(boundary)
     else:
-        S1_out = S1
+        S1_out_final = S1
         S2_out = []
     
-    return S1_out,S2_out
+    return S1_out_final, S2_out
 
 ## 5)
 ## Merged S2 together: 
