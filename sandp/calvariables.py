@@ -299,6 +299,6 @@ def process(filename, outpath):
         ## Filling the Tree:
         T1.Fill()
             
-    # infile.close()
-    # T1.Write()
-    # outfile.Close()
+    infile.close()
+    T1.Write()
+    outfile.Close()
