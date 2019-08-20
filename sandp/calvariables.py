@@ -148,8 +148,9 @@ def process(filename, outpath):
     ## Looping all selected events:
     ## ===========================>
     ## ===========================>
-    for event_number in range(1, totN):
-    ## for event_number in range(3000, 3001):
+    #for event_number in range(1, totN):
+    for event_number in range(1238, 1240):
+        print ('Event number: %d' %event_number)
         EventID[0]=event_number
         
         ## print '------------------------------------------------------- ',event_number
@@ -171,7 +172,7 @@ def process(filename, outpath):
         MicroSec[0] = Time_all % 1000000          ## MicroSec （remainder）
        
         ## Baseline calculation:
-        BaseLineSumSigma[0]=np.std(data[:nsamp_base]) 
+        BaseLineSumSigma[0]=np.std(data[:nsamp_base])
         
         ## Find potential S1 S2:
         S1_potential = find_potential_peaks(data_smooth,
@@ -181,17 +182,22 @@ def process(filename, outpath):
         S2_potential = find_potential_peaks(data_smooth,
                                             s2width_lower_limit,
                                             s2width_upper_limit,
-                                            max(0.001,s2_thre_base*BaseLineSumSigma[0])) 
+                                            max(0.001,s2_thre_base*BaseLineSumSigma[0]))
+
+        # print('S1 potential number: %d' %len(S1_potential))
+        # print('S2 potential number: %d' %len(S2_potential))
         
         ## accurate S1, S2:
         S2_split=split_S2(data_smooth,S2_potential,0.1,1./5)
-        S1, S2=accurate_peaks(data_smooth,S1_potential,S2_split,trigger_position)
+        S1, S2=accurate_peaks(data_smooth,S1_potential,S2_split,s1width_upper_limit)
         S1, S2_temp = accurate_S1(data_smooth,S1,S2,s1width_upper_limit, nearestS1=400,distanceS1=40)
         S2 += S2_temp
         S2 = accurate_S2(S2)
         
         ## print S1
         ## print S2
+        print('S1: ', S1)
+        print('S2: ', S2)
         
         ## Number of S1 and S2 peaks:
         NbS1Peaks[0]=len(S1)    
@@ -293,6 +299,6 @@ def process(filename, outpath):
         ## Filling the Tree:
         T1.Fill()
             
-    infile.close()
-    T1.Write();
-    outfile.Close(); 
+    # infile.close()
+    # T1.Write()
+    # outfile.Close()
