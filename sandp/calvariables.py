@@ -189,7 +189,7 @@ def process(filename, outpath):
         
         ## accurate S1, S2:
         S2_split=split_S2(data_smooth,S2_potential,0.1,1./5)
-        S1, S2=accurate_peaks(data_smooth,S1_potential,S2_split,s1width_upper_limit)
+        S1,S2=accurate_peaks(data_smooth,S1_potential,S2_split,s1width_upper_limit)
         S1, S2_temp = accurate_S1(data_smooth,S1,S2,s1width_upper_limit, nearestS1=400,distanceS1=40)
         S2 += S2_temp
         S2 = accurate_S2(S2)
