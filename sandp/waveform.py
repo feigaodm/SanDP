@@ -61,7 +61,7 @@ def drawWF(evt, fname, savepath=False):
     # ----------->
     rawbaseline = np.mean(dat_raw[0:nsamp_base])
     dat_raw_temp = []
-    for i in range(len(dat_raw)):
+    for i in range(len(dat_raw)):  # TODO: simply it
         dat_raw_temp.append(rawbaseline - dat_raw[i])
     # ----------->
 

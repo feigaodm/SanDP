@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -113,7 +115,6 @@ T1.Branch('S2sPMT', S2sPMT, 'S2sPMT[nchannels]/F')
 
 # processing the raw_data:
 def process(filename, outpath):
-    # Output ROOT File：
     outfile = TFile(outpath + '/' + filename[-26:-4] + '.root', "RECREATE")
 
     # Total number of events:
@@ -142,8 +143,7 @@ def process(filename, outpath):
     # Looping all selected events:
     ## ===========================>
     ## ===========================>
-    # for event_number in range(1, totN):
-    for event_number in range(1243, 1244):
+    for event_number in range(1, totN):
         print('Event number: %d' % event_number)
         EventID[0] = event_number
 
@@ -163,11 +163,11 @@ def process(filename, outpath):
         data_smooth = smooth(data)
         Time_all += Micro  ## In MicroSec
         UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
-        MicroSec[0] = Time_all % 1000000  ## MicroSec （remainder）
+        MicroSec[0] = Time_all % 1000000  # MicroSec
 
         ## Baseline calculation:
         BaseLineSumSigma[0] = np.std(data[:nsamp_base])
-        print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[0])
+        #print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[0])
 
         ## Find potential S1 S2:
         S1_potential = find_potential_peaks(data_smooth,
@@ -179,7 +179,7 @@ def process(filename, outpath):
                                             s2width_upper_limit,
                                             max(0.001, s2_thre_base * BaseLineSumSigma[0]))
 
-        print('S1 potential number: %d\n' % len(S1_potential))
+        #print('S1 potential number: %d\n' % len(S1_potential))
         # print('S2 potential number: %d' %len(S2_potential))
 
         ## accurate S1, S2:
@@ -208,7 +208,7 @@ def process(filename, outpath):
             BaseLineChannel[i] = np.mean(channel[i][:nsamp_base])
             BaseLineChannelSigma[i] = np.std(channel[i][:nsamp_base])
 
-        ## Peak Area to Generate S1 and S2 sort index：
+        ## Peak Area to Generate S1 and S2 sort index
         S1s = []
         S2s = []
         for i in range(len(channel)):
