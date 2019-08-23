@@ -144,7 +144,6 @@ def process(filename, outpath):
     ## ===========================>
     ## ===========================>
     for event_number in range(1, totN):
-        print('Event number: %d' % event_number)
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number
