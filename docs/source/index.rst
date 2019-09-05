@@ -10,6 +10,7 @@ Welcome to sandp's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   sandp
 
 
 Indices and tables
