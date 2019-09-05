@@ -7,7 +7,7 @@ Welcome to sandp's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    sandp
 
