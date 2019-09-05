@@ -9,7 +9,7 @@ Welcome to sandp's documentation!
 .. toctree::
    :maxdepth: 4
 
-.. automodule:: sandp.utils
+   sandp
 
 
 Indices and tables
