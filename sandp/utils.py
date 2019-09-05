@@ -1,3 +1,6 @@
+"""
+Convert root into pandas
+"""
 from root_numpy import root2array
 import pandas as pd
 import numpy as np
