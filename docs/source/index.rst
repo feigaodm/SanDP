@@ -11,6 +11,7 @@ Welcome to sandp's documentation!
 
    sandp
 
+.. automodule:: sandp
 
 Indices and tables
 ==================

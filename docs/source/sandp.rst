@@ -6,7 +6,6 @@ Submodules
 
 sandp.utils module
 -------------------
-.. automodule:: sandp.utils
-    :members:
-    :undoc-members:
-    :show_inheritance:
+.. currentmodule:: sandp.utils
+
+.. autofunction:: load_dataframe
