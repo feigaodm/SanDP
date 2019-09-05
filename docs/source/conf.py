@@ -17,9 +17,21 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../..'))
+
+
+from unittest.mock import MagicMock
+sys.modules.update((mod_name, MagicMock()) for mod_name in ['numpy', 'numpy.ma', 'pandas',
+                                                            'matplotlib', 'matplotlib.pyplot',
+                                                            'ROOT', 'root_numpy',
+                                                            'numba', 'pax.utils', 'pax.InterpolatingMap',
+                                                            'bson', 'dask', 'dask.dataframe', 'dask.multiprocessing',
+                                                            'pax', 'pax.plugins.io.ROOTClass', 'pax.exceptions',
+                                                            'pax.configuration', 'pax.datastructure',
+                                                            'pymongo',
+                                                            ])
 
 
 # -- General configuration ------------------------------------------------
