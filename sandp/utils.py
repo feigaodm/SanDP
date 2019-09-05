@@ -1,5 +1,4 @@
-"""
-Convert root into pandas
+"""Convert root into pandas
 """
 from root_numpy import root2array
 import pandas as pd
@@ -9,8 +8,7 @@ from textwrap import dedent
 
 
 def load_dataframe(filename, amplifier=10):
-    """
-    convert ROOT file into dataframe format.
+    """convert ROOT file into dataframe format.
     :param filename: file name including the path
     :return data: data in pandas dataframe format
     """
@@ -89,8 +87,7 @@ def load_dataframe(filename, amplifier=10):
 
 
 def load_path(path, amplifier=10):
-    """
-    Load all root files from specific path
+    """Load all root files from specific path
     """
     assert isinstance(path, (str, list)), "path should be either string or list type"
 
@@ -108,8 +105,7 @@ def load_path(path, amplifier=10):
 
 
 def code_hider():
-    """
-    Stolen from hax
+    """Stolen from hax
     Make a button in the jupyter notebook to hide all code
     """
     # Stolen from stackoverflow... forget which question
