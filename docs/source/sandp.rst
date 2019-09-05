@@ -6,4 +6,4 @@ Submodules
 
 sandp.utils module
 -------------------
-.. autofunction:: sandp.utils.load_dataframe
+.. automodule:: sandp.event
