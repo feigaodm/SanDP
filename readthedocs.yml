@@ -1,0 +1,5 @@
+python:
+  version: 3
+
+sphinx:
+  configuration: docs/source/conf.py
