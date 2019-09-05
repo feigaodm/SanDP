@@ -4,12 +4,13 @@ import numpy as np
 import os
 from textwrap import dedent
 
+
 def load_dataframe(filename, amplifier=10):
-    '''
+    """
     convert ROOT file into dataframe format.
     :param filename: file name including the path
     :return data: data in pandas dataframe format
-    '''
+    """
     data_1 = pd.DataFrame(root2array(filename, 'T1'))
 
     array_branches = []
@@ -23,7 +24,7 @@ def load_dataframe(filename, amplifier=10):
             if name in column_two:
                 continue
             array_branches.append((name, np.nan))
-            #TODO add length to different array
+            # TODO add length to different array
         else:
             scalar_branches.append(name)
 
@@ -64,8 +65,8 @@ def load_dataframe(filename, amplifier=10):
         data = pd.concat([data, data_tmp], axis=1)
 
     # convert time from sample to us
-    sample_to_us = 4/1e3
-    time_columns = ['s1_time', 'alt_s1_time', 's2_time', 'alt_s2_time',
+    sample_to_us = 4 / 1e3
+    time_columns = ['s1_time', 'alt_s1_time', 's2_time', 'alt_s2_time', 'S1sWidth', 'S1sLowWidth',
                     'S2sLowWidth', 'S2sWidth']
     for column in time_columns:
         data.loc[:, column] *= sample_to_us
@@ -76,12 +77,13 @@ def load_dataframe(filename, amplifier=10):
         signal_columns = ['s1', 'largest_other_s1', 's2', 'largest_other_s2']
         for column in signal_columns:
             data.loc[:, column] /= amplifier
-    
+
     # add alias
-    data['drift_time'] = data['s2_time'] - data['s1_time']# us
-    data['r'] = np.sqrt(data['x']**2 + data['y']**2)
-    
+    data['drift_time'] = data['s2_time'] - data['s1_time']  # us
+    data['r'] = np.sqrt(data['x'] ** 2 + data['y'] ** 2)
+
     return data
+
 
 def load_path(path, amplifier=10):
     """
@@ -101,6 +103,7 @@ def load_path(path, amplifier=10):
             data = pd.concat([data, data_tmp], ignore_index=True)
     return data
 
+
 def code_hider():
     """
     Stolen from hax
@@ -108,7 +111,7 @@ def code_hider():
     """
     # Stolen from stackoverflow... forget which question
     # I would really like these buttons for every individual cell.. but I don't know how
-    from IPython.display import HTML    # Please keep here, don't want hax to depend on ipython!
+    from IPython.display import HTML  # Please keep here, don't want hax to depend on ipython!
     return HTML(dedent('''
                        <script>
                        code_show=true
