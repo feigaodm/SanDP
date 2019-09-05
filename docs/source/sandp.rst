@@ -6,4 +6,4 @@ Submodules
 
 sandp.utils module
 -------------------
-.. automodule:: utils
+.. automodule:: sandp.utils
