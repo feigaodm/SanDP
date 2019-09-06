@@ -2,7 +2,7 @@
 get event property
 """
 import sys
-reload(sys)
+#reload(sys)
 sys.setdefaultencoding('utf-8')
 import struct
 import os
