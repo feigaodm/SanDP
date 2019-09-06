@@ -80,10 +80,11 @@ class Event(object):
     def boundary(self):
         """
         get S1, S2 information, including
-        S1: list of list of left and right boundaries of S1
-        S2: list of list of left and right boundaries of S2
-        NbS1Peaks: number of S1 peaks
-        NbS2Peaks: number of S2 peaks
+
+        -S1: list of list of left and right boundaries of S1
+        -S2: list of list of left and right boundaries of S2
+        -NbS1Peaks: number of S1 peaks
+        -NbS2Peaks: number of S2 peaks
         """
         S1_potential = find_potential_peaks(self.data_smooth,
                                             self.s1width_lower_limit,
@@ -113,10 +114,11 @@ class Event(object):
     def size(self):
         """
         get s1 s2 size
-        S1sTot: list of S1 size, indexed by size
-        S2sTot: list of S2 size, indexed by size
-        S1s_Key: Keys for S1 to be ordered by size
-        S2s_Key: Keys for S2 to be ordered by size
+
+        -S1sTot: list of S1 size, indexed by size
+        -S2sTot: list of S2 size, indexed by size
+        -S1s_Key: Keys for S1 to be ordered by size
+        -S2s_Key: Keys for S2 to be ordered by size
         """
         S1s = []
         S2s = []
