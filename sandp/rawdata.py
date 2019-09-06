@@ -14,7 +14,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from sandp import full_path
 
-from peakfinder import find_potential_peaks
+from .peakfinder import find_potential_peaks
 
 from configparser import ConfigParser
 cfg = ConfigParser()
