@@ -7,7 +7,7 @@ Submodules
 sandp.event module
 ----------------
 
-.. automodule:: sandp.event
+.. automodule:: sandp.Alls2
     :members:
     :undoc-members:
     :show-inheritance:
