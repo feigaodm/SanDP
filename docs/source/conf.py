@@ -30,7 +30,7 @@ sys.modules.update((mod_name, MagicMock()) for mod_name in ['numpy', 'numpy.ma',
                                                             'bson', 'dask', 'dask.dataframe', 'dask.multiprocessing',
                                                             'pax', 'pax.plugins.io.ROOTClass', 'pax.exceptions',
                                                             'pax.configuration', 'pax.datastructure',
-                                                            'pymongo',
+                                                            'pymongo', 'multihist',
                                                             ])
 
 
