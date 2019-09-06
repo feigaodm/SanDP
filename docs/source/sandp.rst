@@ -6,6 +6,7 @@ Submodules
 
 sandp.event module
 ----------------
+
 .. automodule:: sandp.event
     :members:
     :undoc-members:
@@ -13,6 +14,7 @@ sandp.event module
 
 sandp.Alls2 module
 ----------------
+
 .. automodule:: sandp.Alls2
     :members:
     :undoc-members:
@@ -20,6 +22,7 @@ sandp.Alls2 module
 
 sandp.utils module
 ----------------
+
 .. automodule:: sandp.utils
     :members:
     :undoc-members:
