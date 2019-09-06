@@ -1,6 +1,6 @@
 .. image:: bin/sandix_logo.png
 
-SanDix Processor (SanDP) is used for Analyzing the Data from SanDix Detector.
+SanDix Processor (SanDP) is used for Analyzing the Data from SanDix Detector, see Documentation <https://sandp-ucsd.readthedocs.io/en/latest/>`_.
 
 Instructions:
 =========================================
