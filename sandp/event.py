@@ -3,7 +3,7 @@ get event property
 """
 import sys
 #reload(sys)
-sys.setdefaultencoding('utf-8')
+#sys.setdefaultencoding('utf-8')
 import struct
 import os
 import time
