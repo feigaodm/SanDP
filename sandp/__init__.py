@@ -1,4 +1,4 @@
-"""Processor for analyzing XENON1T
+"""Processor for analyzing SanDiX
 Provides a framework for calling plugins that manipulate data.
 """
 import os
