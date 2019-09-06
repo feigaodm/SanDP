@@ -1,3 +1,6 @@
+"""
+For single electron analysis
+"""
 import numpy as np
 import pandas as pd
 from root_numpy import root2array
@@ -62,6 +65,9 @@ def get_max(ndarr):
 
 
 def to_new_df(data, amplifier=True):
+    """
+    Make dataframe with all S2s
+    """
     event_id = get_all_scalar(data.EventID, data.S2sPeak)
     event_time = get_all_scalar(data.UnixTime, data.S2sPeak)  # s
     x = get_all_vector(data.S2sPosX)
