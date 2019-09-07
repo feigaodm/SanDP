@@ -123,14 +123,12 @@ def get_datasets():
     return datasets.drop(['_id', 'processed_data_location'], axis=1)
 
 
-def load(run_numbers, processor='sandix_v1.1'):
-    """load data into pd dataframe by run numbers"""
+def run_number_to_file_s(run_numbers, processor='sandix_v1.1'):
+    """find file path(s) and amplifier condition based on run numbers"""
     if not isinstance(run_numbers, list):
         run_numbers = run_numbers.tolist()
     coll = get_coll()
     doc_s = list(coll.find({'run_number': {'$in': run_numbers}}))
-
-    data = pd.DataFrame()
 
     if processor == 'sandix_v1.1':
         name = 'sandix_v1p1'
@@ -139,13 +137,30 @@ def load(run_numbers, processor='sandix_v1.1'):
     else:
         raise ValueError("processor is either 'sandix_v1.1' or 'sandp_test', wanna try again?")
 
-    for doc in tqdm(doc_s, desc='load data'):
-        if doc['amplifier_on']:
+    run_info = []
+    for doc in doc_s:
+        if not os.path.exists(doc['processed_data_location'][name]):
+            print('run: %d is not found, will be skipped' %doc['run_number'])
+            continue
+
+        run_info.append({'file_location': doc['processed_data_location'][name], 'amplifier_on': doc['amplifier_on'],
+                 'run_number': doc['run_number']})
+
+    return run_info
+
+
+def load(run_numbers, processor='sandix_v1.1'):
+    """load data into pd dataframe by run numbers"""
+    run_info = run_number_to_file_s(run_numbers, processor)
+
+    data = pd.DataFrame()
+    for run in tqdm(run_info, desc='load data'):
+        if run['amplifier_on']:
             amplifier = 10
         else:
             amplifier = 1
-        data_tmp = load_dataframe(doc['processed_data_location'][name], amplifier=amplifier)
-        data_tmp['run_number'] = doc['run_number']
+        data_tmp = load_dataframe(run['file_location'], amplifier=amplifier)
+        data_tmp['run_number'] = run['run_number']
         data = pd.concat([data, data_tmp], ignore_index=True)
 
     return data

@@ -7,6 +7,8 @@ from root_numpy import root2array
 import os
 import matplotlib.pyplot as plt
 from multihist import Histdd, Hist1d
+from .utils import run_number_to_file_s
+from tqdm import tqdm
 
 
 def get_all_vector(ndarr):
@@ -134,47 +136,13 @@ def load_data(file):
     data = pd.DataFrame(root2array(file, 'T1'))
     return data
 
+def load(run_numbers, processor='sandp_test'):
+    run_info = run_number_to_file_s(run_numbers, processor)
 
-def gaus(x, *par):
-    a, mu, sig = par
-    return a * np.exp(-0.5 * (x - mu) ** 2 / sig ** 2)
+    data = pd.DataFrame()
+    for run in tqdm(run_info, desc='load single e data'):
+        data_tmp = to_new_df(load_data(run['file_location']), amplifier=run['amplifier_on'])
+        data_tmp['run_number'] = run['run_number']
+        data = pd.concat([data, data_tmp], ignore_index=True)
 
-
-def multi_gaus(x, *par):
-    a1, a2, a3, a4, mu, sig = par
-    gaus1 = gaus(x, a1, mu, sig)
-    gaus2 = gaus(x, a2, 2 * mu, np.sqrt(2) * sig)
-    gaus3 = gaus(x, a3, 3 * mu, np.sqrt(3) * sig)
-    gaus4 = gaus(x, a4, 4 * mu, np.sqrt(4) * sig)
-    # gaus5 = gaus(x, a5, 5*mu, np.sqrt(5)*sig)
-    return gaus1 + gaus2 + gaus3 + gaus4
-
-
-def eff(x, *par):
-    p0, p1 = par
-    return 1 / (np.exp(-(x - p0) / p1) + 1)
-
-
-def singlefit(x, *par):
-    p0, p1, a1, a2, a3, a4, mu, sig = par
-    return eff(x, p0, p1) * multi_gaus(x, a1, a2, a3, a4, mu, sig)
-
-
-def test_single(df, title=False):
-    fig = plt.figure(figsize=(9, 4))
-    fig.patch.set_color('white')
-    plt.subplot(121)
-    hist_new = Hist1d(df.s2, bins=np.linspace(0, 25, 100))
-    hist_new.plot(label='new processor (update 2)')
-    plt.xlabel('S2 [PE]')
-    plt.ylabel('Counts / bin')
-
-    plt.subplot(122)
-    hist = Hist1d(df.s2_delay_time, bins=np.linspace(0, 80, 100))
-    hist.plot()
-    plt.yscale('log')
-    plt.xlabel('Delay Time from Main S2 [$\mu s$]')
-    plt.ylabel('Counts / bin')
-    if title:
-        plt.suptitle(title)
-    plt.show()
+    return data
