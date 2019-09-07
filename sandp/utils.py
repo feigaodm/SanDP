@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 import os
 from textwrap import dedent
+from pymongo import MongoClient
+from tqdm import tqdm
 
 
 def load_dataframe(filename, amplifier=10):
@@ -102,6 +104,50 @@ def load_path(path, amplifier=10):
         for path_ in path:
             data_tmp = load_path(path_)
             data = pd.concat([data, data_tmp], ignore_index=True)
+    return data
+
+
+def get_coll():
+    """get data collection info from mongodb"""
+    client = MongoClient('mongodb://sandix:%s@132.239.186.12:27017' % os.environ['MONGO_PASSWORD'])
+    db = client['run']
+    coll = db['data']
+    return coll
+
+
+def get_datasets():
+    """get run info as pd dataframe"""
+    coll = get_coll()
+    doc_s = list(coll.find())
+    datasets = pd.DataFrame(doc_s)
+    return datasets.drop(['_id', 'processed_data_location'], axis=1)
+
+
+def load(run_numbers, processor='sandix_v1.1'):
+    """load data into pd dataframe by run numbers"""
+    if not isinstance(run_numbers, list):
+        run_numbers = run_numbers.tolist()
+    coll = get_coll()
+    doc_s = list(coll.find({'run_number': {'$in': run_numbers}}))
+
+    data = pd.DataFrame()
+
+    if processor == 'sandix_v1.1':
+        name = 'sandix_v1p1'
+    elif processor == 'sandp_test':
+        name = 'sandp_test'
+    else:
+        raise ValueError("processor is either 'sandix_v1.1' or 'sandp_test', wanna try again?")
+
+    for doc in tqdm(doc_s, desc='load data'):
+        if doc['amplifier_on']:
+            amplifier = 10
+        else:
+            amplifier = 1
+        data_tmp = load_dataframe(doc['processed_data_location'][name], amplifier=amplifier)
+        data_tmp['run_number'] = doc['run_number']
+        data = pd.concat([data, data_tmp], ignore_index=True)
+
     return data
 
 
