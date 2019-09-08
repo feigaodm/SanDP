@@ -110,28 +110,6 @@ def to_new_df(data, amplifier=True):
     return df
 
 
-def get_file(path):
-    if isinstance(path, str):
-        files = os.listdir(path)
-        full_path_s = [os.path.join(path, file) for file in files if '.root' in file]
-    elif isinstance(path, list):
-        full_path_s_tmp = []
-        for path_ in path:
-            full_path_s_tmp.append(get_file(path_))
-
-        full_path_s = [element for sub_path in full_path_s_tmp for element in sub_path]
-
-    return full_path_s
-
-
-def get_path(basic_path, exclude_paths=False):
-    paths = os.listdir(basic_path)
-    path_s = [os.path.join(basic_path, path) for path in paths if '2019' in path]
-    if exclude_paths:
-        path_s = [path for path in path_s if path not in exclude_paths]
-    return path_s
-
-
 def load_data(file):
     data = pd.DataFrame(root2array(file, 'T1'))
     return data
