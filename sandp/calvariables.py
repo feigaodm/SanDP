@@ -31,27 +31,10 @@ from peakproperty import sort_area
 
 from configparser import ConfigParser
 from sandp import full_path
+from .event import Event
 
 cfg = ConfigParser()
 cfg.read(full_path('config/sandix.ini'))
-
-nsamps = int(cfg['peaks']['nsamps'])
-nchs = int(cfg['peaks']['nchs'])
-
-s1width_lower_limit = int(cfg['peaks']['s1width_lower_limit'])
-s1width_upper_limit = int(cfg['peaks']['s1width_upper_limit'])
-s2width_lower_limit = int(cfg['peaks']['s2width_lower_limit'])
-s2width_upper_limit = int(cfg['peaks']['s2width_upper_limit'])
-
-nsamp_base = int(cfg['peaks']['nsamp_base'])
-s1_thre_base = int(cfg['peaks']['s1_thre_base'])
-s2_thre_base = int(cfg['peaks']['s2_thre_base'])
-trigger_position = int(cfg['peaks']['trigger_position'])
-
-PMTgain = [float(cfg['gains']['ch0_gain']),
-           float(cfg['gains']['ch1_gain']),
-           float(cfg['gains']['ch2_gain']),
-           float(cfg['gains']['ch3_gain'])]
 
 # Tree to store the data
 T1 = TTree("T1", "")
@@ -110,6 +93,57 @@ T1.Branch("S2sEntropy", S2sEntropy, "S2sEntropy[NbS2Peaks]/F")
 T1.Branch("S1sUniformity", S1sUniformity, "S1sUniformity[NbS1Peaks]/F")
 T1.Branch("S2sUniformity", S2sUniformity, "S2sUniformity[NbS2Peaks]/F")
 T1.Branch('S2sPMT', S2sPMT, 'S2sPMT[nchannels]/F')
+
+
+def process(filename, outpath):
+    outfile = TFile(outpath + '/' + filename[-26:-4] + '.root', "RECREATE")
+
+    # Total number of events:
+    infile = open(filename)
+    # go to the last event to check the event counter (ID)
+    infile.seek(-4 * (nchs * nsamps / 2 + 2), os.SEEK_END)
+    totN = (struct.unpack('i', infile.read(4))[0] & 0x00ffffff) + 1
+    print
+    'Total number of event in processing: ', totN
+
+    # Event time:
+    infile.seek(0)
+    HeaderTime = struct.unpack('i', infile.read(4))[0]
+    HeaderTime = HeaderTime - 7 * 60 * 60  ## convert UTC time to SD time.
+    print
+    'Data taking time: ', datetime.utcfromtimestamp(HeaderTime).strftime('%Y-%m-%d %H:%M:%S')
+
+    # Define variables to calculate remaining time:
+    UnixTime[0] = HeaderTime  # Header Reference Time
+    t_passed = 0
+    t_left = 0
+    time_tol = 0
+    time_startc = time.time()
+    Time_all = HeaderTime * 1000000  ## To MicroSec
+
+    for event_number in range(1, totN):
+        ## accumulating running time:
+        t_passed += time.time() - time_startc
+        time_startc = time.time()
+        if (event_number % 500 == 0) and (event_number != 0):
+            t_left = t_passed / float(event_number) * (totN - event_number)
+            print("Job progress : " + str(float(event_number) / float(totN) * 100)
+                  + "% Time passed/left: " + str(t_passed)
+                  + "/" + str(t_left) + " sec ")
+
+        evt = Event(event_number, filename, cfg)
+        evt.baseline()
+
+        event.boundary()
+        event.size()
+        event.peak_width()
+        event.prepare_entropy()
+        event.get_positions()
+        event.main_s2_in_pmt()
+        event.coincidence()
+        event.uniformity()
+
+
 
 
 # processing the raw_data:
