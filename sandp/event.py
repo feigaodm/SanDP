@@ -42,7 +42,7 @@ class Event(object):
         self.data_smooth = smooth(self.data_raw)
         self.get_config(config)
 
-    def get_config(self, cfg):
+    def get_config(self, cfg):  # TODO: don't need to initiate for each event, but for each run instead
         """
         help __init__ get properties from configuration file
         """
@@ -89,13 +89,13 @@ class Event(object):
         S1_potential = find_potential_peaks(self.data_smooth,
                                             self.s1width_lower_limit,
                                             self.s1width_upper_limit,
-                                            max(0.001, self.s1_thre_base * self.BaseLineSumSigma[0]))
+                                            max(0.001, self.s1_thre_base * self.BaseLineSumSigma))
         S2_potential = find_potential_peaks(self.data_smooth,
                                             self.s2width_lower_limit,
                                             self.s2width_upper_limit,
-                                            max(0.001, self.s2_thre_base * self.BaseLineSumSigma[0]))
+                                            max(0.001, self.s2_thre_base * self.BaseLineSumSigma))
 
-        print('S1 potential number: %d\n' % len(S1_potential))
+        # print('S1 potential number: %d\n' % len(S1_potential))
         # print('S2 potential number: %d' %len(S2_potential))
 
         # accurate S1, S2:
@@ -126,13 +126,13 @@ class Event(object):
             S1s.append(integral(self.S1, self.channel[i], self.BaseLineChannel[i], self.PMTgain[i]))
             S2s.append(integral(self.S2, self.channel[i], self.BaseLineChannel[i], self.PMTgain[i]))
 
-        S1sTot_tmp = [0] * len(S1)
-        S2sTot_tmp = [0] * len(S2)
+        S1sTot_tmp = [0] * len(self.S1)
+        S2sTot_tmp = [0] * len(self.S2)
 
-        for i in range(len(S2)):
+        for i in range(len(self.S2)):
             for j in range(len(self.channel)):
                 S2sTot_tmp[i] += S2s[j][i]
-        for i in range(len(S1)):
+        for i in range(len(self.S1)):
             for j in range(len(self.channel)):
                 S1sTot_tmp[i] += S1s[j][i]
 

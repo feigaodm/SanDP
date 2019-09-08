@@ -43,7 +43,6 @@ s1width_upper_limit = int(cfg['peaks']['s1width_upper_limit'])
 s2width_lower_limit = int(cfg['peaks']['s2width_lower_limit'])
 s2width_upper_limit = int(cfg['peaks']['s2width_upper_limit'])
 
-nsamps = int(cfg['peaks']['nsamps'])
 nsamp_base = int(cfg['peaks']['nsamp_base'])
 s1_thre_base = int(cfg['peaks']['s1_thre_base'])
 s2_thre_base = int(cfg['peaks']['s2_thre_base'])
