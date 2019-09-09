@@ -170,13 +170,16 @@ def doc_s_to_run_info(doc_s, version_name):
 def get_file_from_path(path):
     """get absolute path for files under certain path(s)"""
     if isinstance(path, str):
+        if not os.path.exists(path):
+            return []
+
         files = os.listdir(path)
         full_path_s = [os.path.join(path, file) for file in files if '.root' in file]
     else:
         assert hasattr(path, '__len__'), "if 'path' is not a string, then it should be an array or list!"
         full_path_s_tmp = []
         for path_ in path:
-            full_path_s_tmp.append(get_file(path_))
+            full_path_s_tmp.append(get_file_from_path(path_))
 
         full_path_s = [element for sub_path in full_path_s_tmp for element in sub_path]
 
@@ -210,16 +213,33 @@ def folders_to_file_s(folder, processor):
     full_file_path = get_file_from_path(path)
     coll = get_coll()
     version_name = get_processor_version_name(processor)
-    doc_s = list(coll.find({'processed_data_location.%s' %version_name: {'$in', full_file_path}}))
+    doc_s = list(coll.find({'processed_data_location.%s' %version_name: {'$in': full_file_path}}))
 
     run_info = doc_s_to_run_info(doc_s, version_name)
 
     return run_info
 
+def judge_str(input):
+    if isinstance(input, str):
+        return True
+    else:
+        if hasattr(input, '__len__'):
+            if isinstance(input[0], str):
+                return True
+            else:
+                return False
 
-def load(run_numbers, processor='sandix_v1.1'):
-    """load data into pd dataframe by run numbers"""
-    run_info = run_number_to_file_s(run_numbers, processor)
+
+def load(input, processor='sandix_v1.1'):
+    """load data into pd dataframe by run numbers, or folder name"""
+    # hardcode for now
+    is_string = judge_str(input)
+
+    if is_string:
+        run_info = folders_to_file_s(input, processor)
+
+    else:
+        run_info = run_number_to_file_s(input, processor)
 
     data = pd.DataFrame()
     for run in tqdm(run_info, desc='load data'):

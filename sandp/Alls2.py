@@ -7,7 +7,7 @@ from root_numpy import root2array
 import os
 import matplotlib.pyplot as plt
 from multihist import Histdd, Hist1d
-from .utils import run_number_to_file_s
+from .utils import run_number_to_file_s, folders_to_file_s, judge_str
 from tqdm import tqdm
 
 
@@ -133,8 +133,15 @@ def load_data(file):
     data = pd.DataFrame(root2array(file, 'T1'))
     return data
 
-def load(run_numbers, processor='sandp_test'):
-    run_info = run_number_to_file_s(run_numbers, processor)
+def load(input, processor='sandp_test'):
+    """load data into all s2 format. Input can be either folder name or run number"""
+    is_string = judge_str(input)
+
+    if is_string:
+        run_info = folders_to_file_s(input, processor)
+
+    else:
+        run_info = run_number_to_file_s(input, processor)
 
     data = pd.DataFrame()
     for run in tqdm(run_info, desc='load single e data'):
