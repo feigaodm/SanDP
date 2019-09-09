@@ -71,7 +71,7 @@ def load_dataframe(filename, amplifier=10):
     # convert time from sample to us
     sample_to_us = 4 / 1e3
     time_columns = ['s1_time', 'alt_s1_time', 's2_time', 'alt_s2_time', 'S1sWidth', 'S1sLowWidth',
-                    'S2sLowWidth', 'S2sWidth']
+                    'S2sLowWidth', 'S2sWidth', 'S1sRiseTime', 'S1sDropTime', 'S2sRiseTime', 'S2sDropTime']
     for column in time_columns:
         data.loc[:, column] *= sample_to_us
 
@@ -123,13 +123,10 @@ def get_datasets():
     return datasets.drop(['_id', 'processed_data_location'], axis=1)
 
 
-def run_number_to_file_s(run_numbers, processor='sandix_v1.1'):
-    """find file path(s) and amplifier condition based on run numbers"""
-    if not isinstance(run_numbers, list):
-        run_numbers = run_numbers.tolist()
-    coll = get_coll()
-    doc_s = list(coll.find({'run_number': {'$in': run_numbers}}))
-
+def get_processor_version_name(processor):
+    """get processor name from processor name.
+    You may find it stupid, but '.' is not supported in BSON for mongodb..
+    Plus we would like to send a reminder if name goes wrong... limited choices!"""
     if processor == 'sandix_v1.1':
         name = 'sandix_v1p1'
     elif processor == 'sandp_test':
@@ -137,14 +134,85 @@ def run_number_to_file_s(run_numbers, processor='sandix_v1.1'):
     else:
         raise ValueError("processor is either 'sandix_v1.1' or 'sandp_test', wanna try again?")
 
+    return name
+
+
+def run_number_to_file_s(run_numbers, processor):
+    """find file path(s) and amplifier condition based on run numbers"""
+    if not isinstance(run_numbers, list):
+        run_numbers = run_numbers.tolist()
+    coll = get_coll()
+    doc_s = list(coll.find({'run_number': {'$in': run_numbers}}))
+
+    version_name = get_processor_version_name(processor)
+
+    run_info = doc_s_to_run_info(doc_s, version_name)
+
+    return run_info
+
+
+def doc_s_to_run_info(doc_s, version_name):
+    """get info of run (file location, amplifier_on, run_number) based on doc after selection
+    and processor version name"""
     run_info = []
     for doc in doc_s:
-        if not os.path.exists(doc['processed_data_location'][name]):
-            print('run: %d is not found, will be skipped' %doc['run_number'])
+        if not os.path.exists(doc['processed_data_location'][version_name]):
+            print('run: %d is not found, will be skipped' % doc['run_number'])
             continue
 
-        run_info.append({'file_location': doc['processed_data_location'][name], 'amplifier_on': doc['amplifier_on'],
-                 'run_number': doc['run_number']})
+        run_info.append({'file_location': doc['processed_data_location'][version_name],
+                         'amplifier_on': doc['amplifier_on'],
+                         'run_number': doc['run_number']})
+
+    return run_info
+
+
+def get_file_from_path(path):
+    """get absolute path for files under certain path(s)"""
+    if isinstance(path, str):
+        files = os.listdir(path)
+        full_path_s = [os.path.join(path, file) for file in files if '.root' in file]
+    else:
+        assert hasattr(path, '__len__'), "if 'path' is not a string, then it should be an array or list!"
+        full_path_s_tmp = []
+        for path_ in path:
+            full_path_s_tmp.append(get_file(path_))
+
+        full_path_s = [element for sub_path in full_path_s_tmp for element in sub_path]
+
+    return full_path_s
+
+
+def folders_to_path(folder, processor):
+    """find absolute path of each folder based on name of folder and processor version"""
+    version_name = get_processor_version_name(processor)
+
+    if version_name == 'sandix_v1p1':  # TODO: put this into ini
+        base_path = '/home/nilab/10T_Two/Processed/Run21/sandp_v1.1/Co57'
+
+    else:
+        base_path = '/home/nilab/10T_Two/Processed/Run21/sandp_test/SE_update_s1_width_10/Co57/'
+
+    if isinstance(folder, str):
+        path = os.path.join(base_path, folder)
+
+    else:
+        assert hasattr(folder, '__len__'), "if 'folder' is not a string, then it should be an array or list!"
+        path = [folders_to_path(folder_) for folder_ in folder]
+
+    return path
+
+
+def folders_to_file_s(folder, processor):
+    """find files and amplifier conditions based on folder name(s).
+    Return dictionary with keys of file_location and amplifier_on"""
+    path = folders_to_path(folder, processor)
+    full_file_path = get_file_from_path(path)
+    coll = get_coll()
+    version_name = get_processor_version_name(processor)
+    doc_s = list(coll.find({'processed_data_location.%s' %version_name: {'$in', full_file_path}}))
+
+    run_info = doc_s_to_run_info(doc_s, version_name)
 
     return run_info
 
