@@ -96,17 +96,19 @@ def to_new_df(data, amplifier=True):
     else:
         amp = 10
 
+    sample_to_mu = 1 / 250
+
     main_s2 = get_all_vector_as_scalar(data.S2sTot) / amp  # get main s2 in the event which s2 is in
     s2 = get_all_vector(data.S2sTot) / amp  # amplifier
     s1 = get_all_vector_by_other_vector(data.S1sTot, data.S2sPeak) / amp  # amplifier
 
-    s2_width_50 = get_all_vector(data.S2sWidth) / 250  # us
-    s2_width_90 = get_all_vector(data.S2sLowWidth) / 250  # us
-    s2_rise_time = get_all_vector(data.S2sRiseTime) / 250  # us
-    s2_drop_time = get_all_vector(data.S2sDropTime) / 250  # us
-    s1_time = get_all_vector_by_other_vector(data.S1sPeak, data.S2sPeak) / 250  # us
-    s2_time = get_all_vector(data.S2sPeak) / 250  # us
-    main_s2_time = get_all_vector_as_scalar(data.S2sPeak) / 250  # us
+    s2_width_50 = get_all_vector(data.S2sWidth) * sample_to_mu  # us
+    s2_width_90 = get_all_vector(data.S2sLowWidth) * sample_to_mu  # us
+    s2_rise_time = get_all_vector(data.S2sRiseTime) * sample_to_mu  # us
+    s2_drop_time = get_all_vector(data.S2sDropTime) * sample_to_mu  # us
+    s1_time = get_all_vector_by_other_vector(data.S1sPeak, data.S2sPeak) * sample_to_mu # us
+    s2_time = get_all_vector(data.S2sPeak) * sample_to_mu  # us
+    main_s2_time = get_all_vector_as_scalar(data.S2sPeak) * sample_to_mu  # us
     s2_delay_time = s2_time - main_s2_time  # us
 
     df = pd.DataFrame({'event_id': event_id,
