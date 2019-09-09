@@ -2,8 +2,8 @@
 get event property
 """
 import sys
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
 import struct
 import os
 import time
@@ -38,7 +38,7 @@ class Event(object):
     def __init__(self, event_number, file_name, config):
         self.EventID = event_number
         self.file_name = file_name
-        self.data_raw, self.channel, self.Micro = get_raw(self.EventID, self.file_name)
+        self.data_raw, self.channel, self.MicroSec = get_raw(self.EventID, self.file_name)
         self.data_smooth = smooth(self.data_raw)
         self.get_config(config)
 
@@ -46,7 +46,7 @@ class Event(object):
         """
         help __init__ get properties from configuration file
         """
-        self.nchs = int(cfg['peaks']['nchs'])
+        self.nchannels = int(cfg['peaks']['nchs'])
         # width requirement
         self.s1width_lower_limit = int(cfg['peaks']['s1width_lower_limit'])
         self.s1width_upper_limit = int(cfg['peaks']['s1width_upper_limit'])
@@ -126,6 +126,9 @@ class Event(object):
             S1s.append(integral(self.S1, self.channel[i], self.BaseLineChannel[i], self.PMTgain[i]))
             S2s.append(integral(self.S2, self.channel[i], self.BaseLineChannel[i], self.PMTgain[i]))
 
+        self.S1s = S1s
+        self.S2s = S2s
+
         S1sTot_tmp = [0] * len(self.S1)
         S2sTot_tmp = [0] * len(self.S2)
 
@@ -184,10 +187,10 @@ class Event(object):
         # Peak Entropy for noise rejection:
         self.S1sEntropy, self.S2sEntropy = [], []
         for i in range(self.NbS1Peaks):
-            self.S1sEntropy.append(Entropy(self.nchs, self.channel, self.BaseLineChannel,
+            self.S1sEntropy.append(Entropy(self.nchannels, self.channel, self.BaseLineChannel,
                                            self.S1[self.S1s_Key[i]], self.BaseLineChannelSigma))
         for i in range(self.NbS2Peaks):
-            self.S2sEntropy.append(Entropy(self.nchs, self.channel, self.BaseLineChannel,
+            self.S2sEntropy.append(Entropy(self.nchannels, self.channel, self.BaseLineChannel,
                                            self.S2[self.S2s_Key[i]], self.BaseLineChannelSigma))
 
     def get_positions(self):
@@ -195,6 +198,8 @@ class Event(object):
         get xy position for event
         """
         # Peak X Y Position Uniformity and Reconstruction:
+        self.S2sPosX = np.full_like(self.S2sTot, np.nan, dtype=np.double)
+        self.S2sPosY = np.full_like(self.S2sTot, np.nan, dtype=np.double)
         for i in range(self.NbS2Peaks):
             if (self.S2sTot[i] > 10):
                 self.S2sPosX[i] = (self.S2s[0][self.S2s_Key[i]] + self.S2s[2][self.S2s_Key[i]]
@@ -206,9 +211,14 @@ class Event(object):
         """
         get main s2 size in each PMT
         """
-        self.S2sPMT = []
-        for i in range(self.nchs):
-            if len(self.S2s_Key) > 0:
+        x = np.arange(self.nchannels)
+        self.S2sPMT = np.full_like(x, np.nan, dtype=np.double)
+        if self.NbS2Peaks > 0:
+            for i in range(self.nchannels):
+                # print('self.S2s: ', self.S2s)
+                # print('self.S2s_Key[0]: ', self.S2s_Key[0])
+                #if len(self.S2s_Key) > 0:
+                #if self.S2sTot[i] > 10:  # FIX: tmp condition
                 self.S2sPMT[i] = self.S2s[i][self.S2s_Key[0]]
 
     def coincidence(self):
@@ -218,7 +228,7 @@ class Event(object):
         self.S2sCoin = []
         for i in range(self.NbS2Peaks):
             coin = 0
-            for idx in range(self.nchs):
+            for idx in range(self.nchannels):
                 if (self.S2s[idx][self.S2s_Key[i]] > 0.5):  # TODO: different size for S1 and S2?
                     coin += 1
             self.S2sCoin.append(coin)
@@ -226,7 +236,7 @@ class Event(object):
         self.S1sCoin = []
         for i in range(self.NbS1Peaks):
             coin = 0
-            for idx in range(self.nchs):
+            for idx in range(self.nchannels):
                 if (self.S1s[idx][self.S1s_Key[i]] > 0.5):
                     coin += 1
             self.S1sCoin.append(coin)
@@ -234,8 +244,8 @@ class Event(object):
     def uniformity(self):
         self.S1sUniformity, self.S2sUniformity = [], []
         for i in range(self.NbS1Peaks):
-            self.S1sUniformity.append(Uniformity(self.nchs, self.PMTgain, self.channel, self.BaseLineChannel,
+            self.S1sUniformity.append(Uniformity(self.nchannels, self.PMTgain, self.channel, self.BaseLineChannel,
                                                  self.S1[self.S1s_Key[i]], threshold=0.3))
         for i in range(self.NbS2Peaks):
-            self.S2sUniformity.append(Uniformity(self.nchs, self.PMTgain, self.channel, self.BaseLineChannel,
+            self.S2sUniformity.append(Uniformity(self.nchannels, self.PMTgain, self.channel, self.BaseLineChannel,
                                                  self.S2[self.S2s_Key[i]], threshold=0.3))
