@@ -68,7 +68,24 @@ def get_max(ndarr):
 
 def to_new_df(data, amplifier=True):
     """
-    Make dataframe with all S2s
+    Make dataframe for all S2s. It provides:
+
+    - run_number: number of the run
+    - event_id: event number in the run
+    - event_time: when event happened in unix time in seconds
+    - x: x position of event in arbitrary unit (a.u.)
+    - y: y position of event in a.u.
+    - s2: s2 size, PE
+    - main_s2: size of main s2 for the event where the s2 is, PE
+    - s2_width_50: s2 width of 50 percent area in us
+    - s2_width_90: s2 width of 90 percent area in us
+    - s2_rise_time: s2 rise time in us
+    - s2_drop_time: s2 drop time in us
+    - s1: s1 size in PE
+    - s1_time: center time of main s1 in us
+    - s2_time: center time of s2 in us
+    - main_s2_time: center time of main s2 in us
+    - s2_delay_time: how long s2 is delayed after main s2, us
     """
     event_id = get_all_scalar(data.EventID, data.S2sPeak)
     event_time = get_all_scalar(data.UnixTime, data.S2sPeak)  # s
