@@ -8,8 +8,8 @@ setup(
     author = "YWei, JYe",
     author_email = "ywei@physics.ucsd.edu, yejingqiang1992@gmail.com",
     url = "https://wiki.nigroup.ucsd.edu/doku.php?id=sandix",
-    packages = ['sandp','sandp.config', 'sandp.data', 'sandp.plugin'],
+    packages = ['sandp','sandp.config', 'sandp.data', 'sandp.plugin', 'sandp.smooth', 'sandp.findPoWa'],
     package_dir={'sandp': 'sandp'},
-    package_data={'sandp': ['config/*.ini']},
+    package_data={'sandp': ['config/*.ini', 'smooth/*.so', 'findPoWa/*.so']},
     scripts=['bin/sandper']
 )
