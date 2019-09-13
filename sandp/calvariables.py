@@ -364,7 +364,6 @@ def processSPE(filename, outpath):
         s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.001)
         print('TEST peaks (normal):'+str(len(s1)))
 
-        print('hit threshold: '+str(hit_threshold))
         for ich in range(len(channel)):
             channel_data = channel[ich]
             channel_data_smooth = np.abs(np.mean(channel_data[:nsamp_base]) - channel_data)
@@ -374,7 +373,7 @@ def processSPE(filename, outpath):
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            spe = find_potential_peaks(channel_data_smooth, spewidth_lower_limit, spewidth_upper_limit, BaseLineChannelSigma[ich])
+            spe = find_potential_peaks(channel_data_smooth, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
             print('SPE TEST: '+str(spe))
             # Number of SPE:
             NbS1Peaks[0] = len(spe)
