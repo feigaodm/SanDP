@@ -93,9 +93,5 @@ def smooth(origindata,meanNum=100,cover_num=5):
     for i in range(len(origindata)):
         data_smooth[i]=ctypes.c_double(origindata[i])
     clib.smooth(ctypes.byref(data_smooth),ctypes.c_int(meanNum),ctypes.c_int(len(data_smooth)),ctypes.c_int(cover_num))
-    
-    for i in range(cover_num):
-        data_smooth[i]=0
-        data_smooth[i-1]=0
-    
+        
     return data_smooth
