@@ -372,6 +372,7 @@ def processSPE(filename, outpath):
         MicroSec[0] = Time_all % 1000000  # MicroSec
 
         spe = []
+        channel_found = []
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
@@ -385,8 +386,9 @@ def processSPE(filename, outpath):
             spe_potential = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
             print('SPE TEST: '+str(spe_potential))
             spe += spe_potential
-
+            channel_found += list(ich * np.ones_like(0, range(len(spe_potential))))
         print(spe)
+        print(channel_found)
 
         '''
             SPEs = integral(spe_potential, channel[ich], BaseLineChannel[ich], PMTgain[ich])
