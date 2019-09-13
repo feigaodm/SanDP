@@ -334,7 +334,7 @@ def processSPE(filename, outpath):
     ## ===========================>
     ## ===========================>
     # for event_number in range(1, totN):
-    for event_number in range(1, 2):
+    for event_number in range(1, 10):
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number
@@ -366,9 +366,8 @@ def processSPE(filename, outpath):
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            spe = find_potential_peaks(channel_data, spewidth_lower_limit, spewidth_upper_limit,
-                                       max(0.001, s1_thre_base * BaseLineChannelSigma[ich]))
-
+            spe = find_potential_peaks(channel_data, spewidth_lower_limit, s2width_upper_limit, BaseLineChannelSigma[ich])
+            print('SPE TEST: '+len(spe))
             # Number of SPE:
             NbS1Peaks[0] = len(spe)
             print('NbSPEs: '+str(len(spe)))
