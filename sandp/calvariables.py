@@ -364,16 +364,12 @@ def processSPE(filename, outpath):
         s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.001)
         print('TEST peaks (normal):'+str(len(s1)))
 
-        print("hit_threshold: " + str(hit_threshold))
-
-        print("hit_threshold0: " + str(hit_threshold[0]))
-
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
             BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
             print('BaseLineChannel: %f' % BaseLineChannel[ich])
-            channel_data_smooth = np.abs(BaseLineChannel[ich] - channel_data)
+            channel_data_smooth = np.abs(float(BaseLineChannel[ich]) - channel_data)
             BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
