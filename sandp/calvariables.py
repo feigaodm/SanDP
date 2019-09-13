@@ -366,6 +366,10 @@ def processSPE(filename, outpath):
         s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, s2width_upper_limit, 0.001)
         print('TEST peaks:'+str(len(s1)))
 
+        data_smooth = smooth(data)
+        s1 = find_potential_peaks(data_smooth, spewidth_lower_limit, s2width_upper_limit, 0.001)
+        print('TEST peaks:'+str(len(s1)))
+
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
