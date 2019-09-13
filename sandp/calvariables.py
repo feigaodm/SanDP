@@ -366,7 +366,8 @@ def processSPE(filename, outpath):
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            spe = find_potential_peaks(channel_data, spe_lower_limit, spe_upper_limit, max(0.001, s1_thre_base * BaseLineChannelSigma[ich]))
+            spe = find_potential_peaks(channel_data, spewidth_lower_limit, spewidth_upper_limit,
+                                       max(0.001, s1_thre_base * BaseLineChannelSigma[ich]))
 
             # Number of SPE:
             NbS1Peaks[0] = len(spe)
