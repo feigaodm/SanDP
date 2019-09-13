@@ -386,7 +386,7 @@ def processSPE(filename, outpath):
             print('SPE TEST: '+str(spe_potential))
             spe_boundary += spe_potential
 
-            SPEs = integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
+            SPEs = integral(spe_potential, channel[i], BaseLineChannel[i], PMTgain[i])
             print(SPEs)
             # Number of SPE:
             # NbS1Peaks[0] = len(spe_potential)
