@@ -388,8 +388,7 @@ def processSPE(filename, outpath):
 
         print(spe)
 
-            '''
-
+        '''
             SPEs = integral(spe_potential, channel[ich], BaseLineChannel[ich], PMTgain[ich])
             print(SPEs)
             peak = peak_width(channel[ich], 0.5, spe_potential)
