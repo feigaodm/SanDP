@@ -51,10 +51,8 @@ s1_thre_base = int(cfg['peaks']['s1_thre_base'])
 s2_thre_base = int(cfg['peaks']['s2_thre_base'])
 trigger_position = int(cfg['peaks']['trigger_position'])
 
-PMTgain = [float(cfg['gains']['ch0_gain']),
-           float(cfg['gains']['ch1_gain']),
-           float(cfg['gains']['ch2_gain']),
-           float(cfg['gains']['ch3_gain'])]
+PMTgain = float(cfg['peaks']['gains'])
+hit_threshold = float(cfg['peaks']['hit_threshold'])
 
 # Tree to store the data
 T1 = TTree("T1", "")
@@ -366,10 +364,7 @@ def processSPE(filename, outpath):
         s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.001)
         print('TEST peaks (normal):'+str(len(s1)))
 
-        data_smooth = smooth(data)
-        s1 = find_potential_peaks(data_smooth, spewidth_lower_limit, spewidth_upper_limit, 0.001)
-        print('TEST peaks (smooth):'+str(len(s1)))
-
+        print('hit threshold: '+str(hit_threshold))
         for ich in range(len(channel)):
             channel_data = channel[ich]
             channel_data_smooth = np.abs(np.mean(channel_data[:nsamp_base]) - channel_data)
