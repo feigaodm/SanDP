@@ -362,6 +362,9 @@ def processSPE(filename, outpath):
         # print 'Length of the summed-chs WF:    ',len(data)
         # print 'Length of the individual-ch WF: ',len(channel[0])
         # print 'Number of channels in total:    ',len(channel)
+        s1 = find_potential_peaks(data, spewidth_lower_limit, s2width_upper_limit, 0.001)
+        print('TEST peaks:'+str(len(s1)))
+
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
