@@ -51,8 +51,8 @@ s1_thre_base = int(cfg['peaks']['s1_thre_base'])
 s2_thre_base = int(cfg['peaks']['s2_thre_base'])
 trigger_position = int(cfg['peaks']['trigger_position'])
 
-PMTgain = float(cfg['peaks']['gains'])
-hit_threshold = float(cfg['peaks']['hit_threshold'])
+PMTgain = np.array(cfg['peaks']['gains'])
+hit_threshold = np.array(cfg['peaks']['hit_threshold'])
 
 # Tree to store the data
 T1 = TTree("T1", "")
