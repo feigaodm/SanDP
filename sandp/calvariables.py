@@ -372,14 +372,14 @@ def processSPE(filename, outpath):
 
         for ich in range(len(channel)):
             channel_data = channel[ich]
-            channel_data_smooth = smooth(channel_data)
+            channel_data_smooth = np.abs(np.mean(channel_data[:nsamp_base]) - channel_data)
             ## Baseline calculation:
             BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
             BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            spe = find_potential_peaks(channel_data_smooth, spewidth_lower_limit, s2width_upper_limit, BaseLineChannelSigma[ich])
+            spe = find_potential_peaks(channel_data_smooth, spewidth_lower_limit, spewidth_upper_limit, BaseLineChannelSigma[ich])
             print('SPE TEST: '+str(spe))
             # Number of SPE:
             NbS1Peaks[0] = len(spe)
