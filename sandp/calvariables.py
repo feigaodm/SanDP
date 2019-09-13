@@ -345,10 +345,12 @@ def processSPE(filename, outpath):
                   + "% Time passed/left: " + str(t_passed)
                   + "/" + str(t_left) + " sec ")
 
-        ## Go to rawdata !!!:
+        # Go to rawdata !!!:
         data, channel, Micro = get_raw(event_number, filename)
-        print("data:" + str(data.shape))
-        print('data per channel:' + str(channel.shape))
+        # Testing:
+        print 'Length of the summed-chs WF:    ',len(data)
+        print 'Length of the individual-ch WF: ',len(channel[0])
+        print 'Number of channels in total:    ',len(channel)
 
         Time_all += Micro  ## In MicroSec
         UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
