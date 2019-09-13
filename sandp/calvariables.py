@@ -38,6 +38,8 @@ cfg.read(full_path('config/sandix.ini'))
 nsamps = int(cfg['peaks']['nsamps'])
 nchs = int(cfg['peaks']['nchs'])
 
+spewidth_lower_limit = int(cfg['peaks']['spewidth_lower_limit'])
+spewidth_upper_limit = int(cfg['peaks']['spewidth_upper_limit'])
 s1width_lower_limit = int(cfg['peaks']['s1width_lower_limit'])
 s1width_upper_limit = int(cfg['peaks']['s1width_upper_limit'])
 s2width_lower_limit = int(cfg['peaks']['s2width_lower_limit'])
