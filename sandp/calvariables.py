@@ -127,7 +127,7 @@ def process(filename, outpath):
     print
     'Total number of event in processing: ', totN
 
-    totN = 10
+    totN = 20
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
@@ -318,7 +318,7 @@ def processSPE(filename, outpath):
     print
     'Total number of event in processing: ', totN
 
-    totN = 10
+    totN = 20
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
