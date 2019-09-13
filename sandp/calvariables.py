@@ -371,7 +371,7 @@ def processSPE(filename, outpath):
         UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
         MicroSec[0] = Time_all % 1000000  # MicroSec
 
-        spe_boundary = []
+        spe = []
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
@@ -384,17 +384,24 @@ def processSPE(filename, outpath):
             ## Find potential SPE peaks:
             spe_potential = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
             print('SPE TEST: '+str(spe_potential))
-            spe_boundary += spe_potential
+            spe += spe_potential
+
+        print(spe)
+
+            '''
 
             SPEs = integral(spe_potential, channel[ich], BaseLineChannel[ich], PMTgain[ich])
             print(SPEs)
+            peak = peak_width(channel[ich], 0.5, spe_potential)
+            
+            
             # Number of SPE:
             # NbS1Peaks[0] = len(spe_potential)
 
             ## Peak Area to Generate S1 and S2 sort index
             # SPEs = integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
 
-            '''
+            
             ## Peak Width and time positions:
             for i in range(NbS1Peaks[0]):
                 peak = peak_width(data_smooth, 0.5, S1[S1s_Key[i]])
