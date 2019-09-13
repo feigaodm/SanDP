@@ -54,9 +54,6 @@ trigger_position = int(cfg['peaks']['trigger_position'])
 PMTgain = np.array(eval(cfg['peaks']['gains']))
 hit_threshold = np.array(eval(cfg['peaks']['hit_threshold']))
 
-# Tree to store the data
-T1 = TTree("T1", "")
-
 # Variables for the branches
 EventID = array('i', [0])
 UnixTime = array('l', [0])
@@ -80,6 +77,8 @@ S1sTot, S2sTot = array("f", maxpeaks * [0.0]), array("f", maxpeaks * [0.0])  # p
 S1sCoin, S2sCoin = array("i", maxpeaks * [0]), array("i", maxpeaks * [0])  # number of coincidence channels
 S2sPMT = array('f', maxpeaks * [0.0])  # main s2 size in each PMT
 
+# Tree to store the data
+T1 = TTree("T1", "")
 # Branches
 T1.Branch("EventID", EventID, "EventID/I")
 T1.Branch("UnixTime", UnixTime, "UnixTime/L")
@@ -304,7 +303,24 @@ def process(filename, outpath):
     outfile.Close()
 
 
-# processing the raw_data:
+# Tree to store the data
+T2 = TTree("T2", "")
+# Branches
+T2.Branch("EventID", EventID, "EventID/I")
+T2.Branch("UnixTime", UnixTime, "UnixTime/L")
+T2.Branch("MicroSec", MicroSec, "MicroSec/I")
+T2.Branch("nchannels", nchannels, "nchannels/I")
+T2.Branch("BaseLineChannel", BaseLineChannel, "BaseLineChannel[nchannels]/F")
+T2.Branch("BaseLineChannelSigma", BaseLineChannelSigma, "BaseLineChannelSigma[nchannels]/F")
+T2.Branch("NbS1Peaks", NbS1Peaks, "NbS1Peaks/I")
+T2.Branch("S1sTot", S1sTot, "S1sTot[NbS1Peaks]/F")
+T2.Branch("S1sCoin", S1sCoin, "S1sCoin[NbS1Peaks]/I")
+T2.Branch("S1sRiseTime", S1sRiseTime, "S1sRiseTime[NbS1Peaks]/F")
+T2.Branch("S1sDropTime", S1sDropTime, "S1sDropTime[NbS1Peaks]/F")
+T2.Branch("S1sWidth", S1sWidth, "S1sWidth[NbS1Peaks]/F")
+T2.Branch("S1sLowWidth", S1sLowWidth, "S1sLowWidth[NbS1Peaks]/F")
+
+# processing the raw_data for single PE
 def processSPE(filename, outpath):
     outfile = TFile(outpath + '/' + filename[-26:-4] + '.root', "RECREATE")
 
@@ -315,7 +331,6 @@ def processSPE(filename, outpath):
     totN = (struct.unpack('i', infile.read(4))[0] & 0x00ffffff) + 1
     print
     'Total number of event in processing: ', totN
-
     
     # Event time:
     infile.seek(0)
@@ -357,11 +372,11 @@ def processSPE(filename, outpath):
         MicroSec[0] = Time_all % 1000000  # MicroSec
 
         # Testing:
-        print 'Length of the summed-chs WF:    ',len(data)
-        print 'Length of the individual-ch WF: ',len(channel[0])
-        print 'Number of channels in total:    ',len(channel)
+        # print 'Length of the summed-chs WF:    ',len(data)
+        # print 'Length of the individual-ch WF: ',len(channel[0])
+        # print 'Number of channels in total:    ',len(channel)
         data_normalize = np.abs(np.mean(data[:nsamp_base]) - data)
-        s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.001)
+        s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.01)
         print('TEST peaks (normal):'+str(len(s1)))
 
         for ich in range(len(channel)):
@@ -369,12 +384,12 @@ def processSPE(filename, outpath):
             ## Baseline calculation:
             BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
             print('BaseLineChannel: %f' % BaseLineChannel[ich])
-            channel_data_smooth = np.mean(channel_data[:nsamp_base]) - channel_data
+            channel_data_normalize = np.mean(channel_data[:nsamp_base]) - channel_data
             BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            spe = find_potential_peaks(channel_data_smooth, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
+            spe = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
             print('SPE TEST: '+str(spe))
             # Number of SPE:
             NbS1Peaks[0] = len(spe)
@@ -405,4 +420,7 @@ def processSPE(filename, outpath):
             '''
 
         ## Filling the Tree:
-        # T1.Fill()
+        T2.Fill()
+    infile.close()
+    T2.Write()
+    outfile.Close()
