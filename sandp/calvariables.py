@@ -370,9 +370,10 @@ def processSPE(filename, outpath):
 
         for ich in range(len(channel)):
             channel_data = channel[ich]
-            channel_data_smooth = np.abs(np.mean(channel_data[:nsamp_base]) - channel_data)
             ## Baseline calculation:
             BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
+            print('BaseLineChannel: %f' % BaseLineChannel[ich])
+            channel_data_smooth = np.abs(BaseLineChannel[ich] - channel_data)
             BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
             print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
