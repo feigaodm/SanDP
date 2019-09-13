@@ -36,7 +36,7 @@ def get_raw(event_number, filename):
         # if event_number == 0:
         #    return length_unit ## This offset is for the Unix before the header of the first event.
         # return event_number*length_unit*6 + event_number*nsamps*nchs*length_unit/2
-        return (event_number-1)*(nsamps*nchs*4/2+28)
+        return (event_number)*(nsamps*nchs*4/2+28)
         ##        UnixTime + event_number*Header        + event_number*samples
         ##        (note: samples need to be /2 according to the CAEN manual)
 
