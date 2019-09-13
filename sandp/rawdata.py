@@ -45,6 +45,7 @@ def get_raw(event_number, filename):
     
     ## Last event:
     seek_number = calculate_seek_number(event_number - 1) ## -1 means last event
+    print('seek_number: '+str(seek_number))
     ss.seek(seek_number + length_unit*7) ## 5*length_unit offset to TRIGGER TIME TAG
     pre_counter=struct.unpack('i',ss.read(4))[0] & 0xffffffff
     
