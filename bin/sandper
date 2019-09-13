@@ -76,7 +76,7 @@ def main():
     ###################
     
     if (args.processing):
-        calvariables.process(args.raw_data, args.outdata_path)
+        calvariables.processSPE(args.raw_data, args.outdata_path)
 
 
     

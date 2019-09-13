@@ -299,3 +299,57 @@ def process(filename, outpath):
     infile.close()
     T1.Write()
     outfile.Close()
+
+
+# processing the raw_data:
+def processSPE(filename, outpath):
+    outfile = TFile(outpath + '/' + filename[-26:-4] + '.root', "RECREATE")
+
+    # Total number of events:
+    infile = open(filename)
+    # go to the last event to check the event counter (ID)
+    infile.seek(-4 * (nchs * nsamps / 2 + 2), os.SEEK_END)
+    totN = (struct.unpack('i', infile.read(4))[0] & 0x00ffffff) + 1
+    print
+    'Total number of event in processing: ', totN
+
+    # Event time:
+    infile.seek(0)
+    HeaderTime = struct.unpack('i', infile.read(4))[0]
+    HeaderTime = HeaderTime - 7 * 60 * 60  ## convert UTC time to SD time.
+    print
+    'Data taking time: ', datetime.utcfromtimestamp(HeaderTime).strftime('%Y-%m-%d %H:%M:%S')
+
+    # Define variables to calculate remaining time:
+    UnixTime[0] = HeaderTime  # Header Reference Time
+    t_passed = 0
+    t_left = 0
+    time_tol = 0
+    time_startc = time.time()
+    Time_all = HeaderTime * 1000000  ## To MicroSec
+
+    # Looping all selected events:
+    ## ===========================>
+    ## ===========================>
+    for event_number in range(1, totN):
+        EventID[0] = event_number
+
+        ## print '------------------------------------------------------- ',event_number
+
+        ## accumulating running time:
+        t_passed += time.time() - time_startc
+        time_startc = time.time()
+        if (event_number % 500 == 0) and (event_number != 0):
+            t_left = t_passed / float(event_number) * (totN - event_number)
+            print("Job progress : " + str(float(event_number) / float(totN) * 100)
+                  + "% Time passed/left: " + str(t_passed)
+                  + "/" + str(t_left) + " sec ")
+
+        ## Go to rawdata !!!:
+        data, channel, Micro = get_raw(event_number, filename)
+        print("data:" + str(data.shape))
+        print('data per channel:' + str(channel.shape))
+
+        Time_all += Micro  ## In MicroSec
+        UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
+        MicroSec[0] = Time_all % 1000000  # MicroSec
