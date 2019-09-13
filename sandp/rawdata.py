@@ -33,9 +33,9 @@ def get_raw(event_number, filename):
     length_unit = 4
     ## Seek the offset: 
     def calculate_seek_number(event_number):
-        if event_number == 0:
-            return length_unit ## This offset is for the Unix before the header of the first event.
-        return length_unit + event_number*length_unit*6 + event_number*nsamps*nchs*length_unit/2
+        # if event_number == 0:
+        #    return length_unit ## This offset is for the Unix before the header of the first event.
+        return event_number*length_unit*6 + event_number*nsamps*nchs*length_unit/2
         ##        UnixTime + event_number*Header        + event_number*samples
         ##        (note: samples need to be /2 according to the CAEN manual)
 
