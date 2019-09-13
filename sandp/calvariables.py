@@ -331,7 +331,8 @@ def processSPE(filename, outpath):
     # Looping all selected events:
     ## ===========================>
     ## ===========================>
-    for event_number in range(1, totN):
+    # for event_number in range(1, totN):
+    for event_number in range(1, 2):
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number
@@ -347,11 +348,20 @@ def processSPE(filename, outpath):
 
         # Go to rawdata !!!:
         data, channel, Micro = get_raw(event_number, filename)
-        # Testing:
-        print 'Length of the summed-chs WF:    ',len(data)
-        print 'Length of the individual-ch WF: ',len(channel[0])
-        print 'Number of channels in total:    ',len(channel)
-
         Time_all += Micro  ## In MicroSec
         UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
         MicroSec[0] = Time_all % 1000000  # MicroSec
+
+        # Testing:
+        # print 'Length of the summed-chs WF:    ',len(data)
+        # print 'Length of the individual-ch WF: ',len(channel[0])
+        # print 'Number of channels in total:    ',len(channel)
+        for ich in range(len(channel)):
+            channel_data = channel[ich]
+            ## Baseline calculation:
+            BaseLineSigma = np.std(channel_data[:nsamp_base])
+            print('BaseLineChannelSigma: %f' % BaseLineSigma)
+
+            ## Find potential SPE peaks:
+            # spe_potential = find_potential_peaks(channel_data, spe_lower_limit,
+            #                                     spe_upper_limit, max(0.001, s1_thre_base * BaseLineSumSigma[0]))
