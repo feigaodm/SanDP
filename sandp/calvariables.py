@@ -318,7 +318,7 @@ def processSPE(filename, outpath):
     print
     'Total number of event in processing: ', totN
 
-    totN = 120
+    totN = 101
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
@@ -362,8 +362,8 @@ def processSPE(filename, outpath):
         # print 'Length of the summed-chs WF:    ',len(data)
         # print 'Length of the individual-ch WF: ',len(channel[0])
         # print 'Number of channels in total:    ',len(channel)
-        data_smooth = smooth(data)
-        s1 = find_potential_peaks(data, spewidth_lower_limit, s2width_upper_limit, 0.001)
+        data_normalize = np.mean(data[:nsamp_base]) - data
+        s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, s2width_upper_limit, 0.001)
         print('TEST peaks:'+str(len(s1)))
 
         for ich in range(len(channel)):
