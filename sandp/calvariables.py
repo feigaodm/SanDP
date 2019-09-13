@@ -371,14 +371,7 @@ def processSPE(filename, outpath):
         UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
         MicroSec[0] = Time_all % 1000000  # MicroSec
 
-        # Testing:
-        # print 'Length of the summed-chs WF:    ',len(data)
-        # print 'Length of the individual-ch WF: ',len(channel[0])
-        # print 'Number of channels in total:    ',len(channel)
-        data_normalize = np.abs(np.mean(data[:nsamp_base]) - data)
-        s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.01)
-        print('TEST peaks (normal):'+str(len(s1)))
-
+        spe_boundary = []
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
@@ -386,17 +379,17 @@ def processSPE(filename, outpath):
             print('BaseLineChannel: %f' % BaseLineChannel[ich])
             channel_data_normalize = np.mean(channel_data[:nsamp_base]) - channel_data
             BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
-            print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
+            # print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            spe = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
-            print('SPE TEST: '+str(spe))
-            # Number of SPE:
-            NbS1Peaks[0] = len(spe)
-            print('NbSPEs: '+str(len(spe)))
-            #if NbS1Peaks[0] > 100:
-            #NbS1Peaks[0] = 100
+            spe_potential = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
+            print('SPE TEST: '+str(spe_potential))
+            spe_boundary += spe_potential
 
+            SPEs = integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
+            print(SPEs)
+            # Number of SPE:
+            # NbS1Peaks[0] = len(spe_potential)
 
             ## Peak Area to Generate S1 and S2 sort index
             # SPEs = integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
