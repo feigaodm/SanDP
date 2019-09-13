@@ -363,11 +363,11 @@ def processSPE(filename, outpath):
         # print 'Length of the individual-ch WF: ',len(channel[0])
         # print 'Number of channels in total:    ',len(channel)
         data_normalize = np.mean(data[:nsamp_base]) - data
-        s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, s2width_upper_limit, 0.001)
+        s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.001)
         print('TEST peaks (normal):'+str(len(s1)))
 
         data_smooth = smooth(data)
-        s1 = find_potential_peaks(data_smooth, spewidth_lower_limit, s2width_upper_limit, 0.001)
+        s1 = find_potential_peaks(data_smooth, spewidth_lower_limit, spewidth_upper_limit, 0.001)
         print('TEST peaks (smooth):'+str(len(s1)))
 
         for ich in range(len(channel)):
