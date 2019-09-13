@@ -200,6 +200,7 @@ def process(filename, outpath):
         NbS1Peaks[0] = len(S1)
         NbS2Peaks[0] = len(S2)
         print('S1: '+str(NbS1Peaks[0]))
+        print('S2: ' + str(NbS2Peaks[0]))
 
         if NbS1Peaks[0] > 100:
             NbS1Peaks[0] = 100
