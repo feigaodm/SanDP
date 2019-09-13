@@ -359,9 +359,40 @@ def processSPE(filename, outpath):
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
-            BaseLineSigma = np.std(channel_data[:nsamp_base])
-            print('BaseLineChannelSigma: %f' % BaseLineSigma)
+            BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
+            BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
+            print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
-            # spe_potential = find_potential_peaks(channel_data, spe_lower_limit,
-            #                                     spe_upper_limit, max(0.001, s1_thre_base * BaseLineSumSigma[0]))
+            spe = find_potential_peaks(channel_data, spe_lower_limit, spe_upper_limit, max(0.001, s1_thre_base * BaseLineChannelSigma[ich]))
+
+            # Number of SPE:
+            NbS1Peaks[0] = len(spe)
+            print('NbSPEs: '+str(len(spe)))
+            #if NbS1Peaks[0] > 100:
+            #NbS1Peaks[0] = 100
+
+
+            ## Peak Area to Generate S1 and S2 sort index
+            # SPEs = integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
+
+            '''
+            ## Peak Width and time positions:
+            for i in range(NbS1Peaks[0]):
+                peak = peak_width(data_smooth, 0.5, S1[S1s_Key[i]])
+                S1sWidth[i] = peak[2] - peak[0]
+                S1sPeak[i] = peak[1]
+                peaklow = peak_width(data_smooth, 0.1, S1[S1s_Key[i]])
+                S1sLowWidth[i] = peaklow[2] - peaklow[0]
+                S1sRiseTime[i] = peak[0] - peaklow[0]
+                S1sDropTime[i] = peaklow[2] - peak[2]
+
+
+            ## Peak Entropy for noise rejection:
+            for i in range(NbS1Peaks[0]):
+                S1sEntropy[i] = Entropy(nchannels[0], channel, BaseLineChannel, S1[S1s_Key[i]], BaseLineChannelSigma)
+
+            '''
+
+        ## Filling the Tree:
+        # T1.Fill()
