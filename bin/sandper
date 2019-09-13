@@ -19,7 +19,16 @@ def main():
     action='store_true',
     help='start processing rawdata')
     ## -------------->
-    
+
+    ## -------------->
+    parser.add_argument(
+    '--processSPE',
+    dest='processingSPE',
+    action='store_true',
+    help='start processing rawdata (SPE)')
+    ## -------------->
+
+
     ## version:
     parser.add_argument('--version', action = 'store_true', help = "latest version")
     
@@ -76,6 +85,9 @@ def main():
     ###################
     
     if (args.processing):
+        calvariables.process(args.raw_data, args.outdata_path)
+
+    if (args.processingSPE):
         calvariables.processSPE(args.raw_data, args.outdata_path)
 
 

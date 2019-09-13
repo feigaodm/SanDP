@@ -127,6 +127,7 @@ def process(filename, outpath):
     print
     'Total number of event in processing: ', totN
 
+    totN = 10
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
@@ -198,6 +199,7 @@ def process(filename, outpath):
         ## Number of S1 and S2 peaks:
         NbS1Peaks[0] = len(S1)
         NbS2Peaks[0] = len(S2)
+        print('S1: '+str(NbS1Peaks[0]))
 
         if NbS1Peaks[0] > 100:
             NbS1Peaks[0] = 100
@@ -315,6 +317,7 @@ def processSPE(filename, outpath):
     print
     'Total number of event in processing: ', totN
 
+    totN = 10
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
@@ -334,7 +337,7 @@ def processSPE(filename, outpath):
     ## ===========================>
     ## ===========================>
     # for event_number in range(1, totN):
-    for event_number in range(1, 10):
+    for event_number in range(1, totN):
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number
@@ -367,7 +370,7 @@ def processSPE(filename, outpath):
 
             ## Find potential SPE peaks:
             spe = find_potential_peaks(channel_data, spewidth_lower_limit, s2width_upper_limit, BaseLineChannelSigma[ich])
-            print('SPE TEST: '+len(spe))
+            print('SPE TEST: '+str(spe))
             # Number of SPE:
             NbS1Peaks[0] = len(spe)
             print('NbSPEs: '+str(len(spe)))
