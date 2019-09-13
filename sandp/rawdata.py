@@ -86,7 +86,7 @@ def get_raw(event_number, filename):
 
 ## 2)
 ## summed WF smoothing:
-def smooth(origindata,meanNum=100,cover_num=5):
+def smooth(origindata,meanNum=100,cover_num=3):
     #clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/smooth/smooth.so")
     clib = ctypes.cdll.LoadLibrary(full_path("smooth/smooth.so"))
     data_smooth=(ctypes.c_double * len(origindata))()

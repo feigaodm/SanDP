@@ -359,10 +359,10 @@ def processSPE(filename, outpath):
         MicroSec[0] = Time_all % 1000000  # MicroSec
 
         # Testing:
-        # print 'Length of the summed-chs WF:    ',len(data)
-        # print 'Length of the individual-ch WF: ',len(channel[0])
-        # print 'Number of channels in total:    ',len(channel)
-        data_normalize = np.mean(data[:nsamp_base]) - data
+        print 'Length of the summed-chs WF:    ',len(data)
+        print 'Length of the individual-ch WF: ',len(channel[0])
+        print 'Number of channels in total:    ',len(channel)
+        data_normalize = np.abs(np.mean(data[:nsamp_base]) - data)
         s1 = find_potential_peaks(data_normalize, spewidth_lower_limit, spewidth_upper_limit, 0.001)
         print('TEST peaks (normal):'+str(len(s1)))
 
