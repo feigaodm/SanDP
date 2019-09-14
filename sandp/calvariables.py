@@ -386,7 +386,7 @@ def processSPE(filename, outpath):
             spe_potential = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
             print('SPE TEST: '+str(spe_potential))
             spe += spe_potential
-            channel_found += list(ich * np.ones_like(0, range(len(spe_potential))))
+            channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
         print(spe)
         print(channel_found)
 
