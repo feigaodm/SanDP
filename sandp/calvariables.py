@@ -373,6 +373,11 @@ def processSPE(filename, outpath):
 
         spe = []
         channel_found = []
+        spe_area = []
+        spe_peak = []
+        spe_width = []
+        spe_risetime = []
+        spe_droptime = []
         for ich in range(len(channel)):
             channel_data = channel[ich]
             ## Baseline calculation:
@@ -387,22 +392,27 @@ def processSPE(filename, outpath):
             print('SPE TEST: '+str(spe_potential))
             spe += spe_potential
             channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
+
+            for edge in spe_potential:
+                spe_area.append(integral(edge, ich, BaseLineChannel[ich], PMTgain[ich]))
+                peak = peak_width(channel_data_normalize, 0.5, edge)
+                spe_peak.append(peak[1])
+                spe_width.append(peak[2] - peak[0])
+                peaklow = peak_width(channel_data_normalize, 0.1, edge)
+                spe_risetime.append(peak[0] - peaklow[0])
+                spe_droptime.append(peaklow[2] - peak[2])
+
         print(spe)
         print(channel_found)
+        print(spe_area)
+        pront(spe_peak)
+
+        NbS1Peaks[0] = len(spe)
+        #for ip, edge in enumerate(spe):
+        #    S1sTot[ip] = integral(edge, ich, BaseLineChannel[ich], PMTgain[ich])
 
         '''
-            SPEs = integral(spe_potential, channel[ich], BaseLineChannel[ich], PMTgain[ich])
-            print(SPEs)
-            peak = peak_width(channel[ich], 0.5, spe_potential)
-            
-            
-            # Number of SPE:
-            # NbS1Peaks[0] = len(spe_potential)
-
-            ## Peak Area to Generate S1 and S2 sort index
-            # SPEs = integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
-
-            
+ 
             ## Peak Width and time positions:
             for i in range(NbS1Peaks[0]):
                 peak = peak_width(data_smooth, 0.5, S1[S1s_Key[i]])
