@@ -58,8 +58,8 @@ hit_threshold = np.array(eval(cfg['peaks']['hit_threshold']))
 EventID = array('i', [0])
 UnixTime = array('l', [0])
 MicroSec = array('i', [0])
-BaseLineSumSigma = array('f', [0.0])
-nchannels = array("i", [4])  #Summed Baseline STD
+BaseLineSumSigma = array('f', [0.0]) #Summed Baseline STD
+nchannels = array("i", [7])
 BaseLineChannel = array("f", nchannels[0] * [0.0])  # Baseline mean per channel
 BaseLineChannelSigma = array("f", nchannels[0] * [0.0])  # Baseline STD per channel
 NbS1Peaks = array('i', [0])  # total nb of S1 peaks
@@ -128,7 +128,7 @@ def process(filename, outpath):
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
-    HeaderTime = HeaderTime - 7 * 60 * 60  ## convert UTC time to SD time.
+    HeaderTime = HeaderTime + 2 * 60 * 60  ## convert UTC time to LNGS time.
     print
     'Data taking time: ', datetime.utcfromtimestamp(HeaderTime).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -335,7 +335,7 @@ def processSPE(filename, outpath):
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
-    HeaderTime = HeaderTime - 7 * 60 * 60  ## convert UTC time to SD time.
+    HeaderTime = HeaderTime + 2 * 60 * 60  ## convert UTC time to LNGS time.
     print
     'Data taking time: ', datetime.utcfromtimestamp(HeaderTime).strftime('%Y-%m-%d %H:%M:%S')
 

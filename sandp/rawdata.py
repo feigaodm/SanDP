@@ -58,7 +58,7 @@ def get_raw(event_number, filename):
         delta_counter= counter-pre_counter
     else :
         delta_counter= counter-pre_counter+const_time
-    MicroSec =int(delta_counter * 8e-3) ## Convert time to Micro_seconds
+    MicroSec =int(delta_counter * 1e-2) ## Convert time to Micro_seconds
     
     ## Filling the data: ---->
     ## ---------------------->
