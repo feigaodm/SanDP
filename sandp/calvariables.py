@@ -394,7 +394,9 @@ def processSPE(filename, outpath):
             channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
 
             for edge in spe_potential:
-                spe_area.append(integral(edge, channel_data, BaseLineChannel[ich], PMTgain[ich]))
+                area_tmp = np.sum(channel_data_normalize[edge[0]:edge[1]+1])*4.9932e8/PMTgain[ich]
+                spe_area.append(area_tmp)
+                # integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
                 peak = peak_width(channel_data_normalize, 0.5, edge)
                 spe_peak.append(peak[1])
                 spe_width.append(peak[2] - peak[0])
@@ -409,21 +411,8 @@ def processSPE(filename, outpath):
 
         NbS1Peaks[0] = len(spe)
         #for ip, edge in enumerate(spe):
-        #    S1sTot[ip] = integral(edge, ich, BaseLineChannel[ich], PMTgain[ich])
 
         '''
- 
-            ## Peak Width and time positions:
-            for i in range(NbS1Peaks[0]):
-                peak = peak_width(data_smooth, 0.5, S1[S1s_Key[i]])
-                S1sWidth[i] = peak[2] - peak[0]
-                S1sPeak[i] = peak[1]
-                peaklow = peak_width(data_smooth, 0.1, S1[S1s_Key[i]])
-                S1sLowWidth[i] = peaklow[2] - peaklow[0]
-                S1sRiseTime[i] = peak[0] - peaklow[0]
-                S1sDropTime[i] = peaklow[2] - peak[2]
-
-
             ## Peak Entropy for noise rejection:
             for i in range(NbS1Peaks[0]):
                 S1sEntropy[i] = Entropy(nchannels[0], channel, BaseLineChannel, S1[S1s_Key[i]], BaseLineChannelSigma)
