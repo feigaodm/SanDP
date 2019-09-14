@@ -38,6 +38,8 @@ cfg.read(full_path('config/sandix.ini'))
 nsamps = int(cfg['peaks']['nsamps'])
 nchs = int(cfg['peaks']['nchs'])
 
+spewidth_lower_limit = int(cfg['peaks']['spewidth_lower_limit'])
+spewidth_upper_limit = int(cfg['peaks']['spewidth_upper_limit'])
 s1width_lower_limit = int(cfg['peaks']['s1width_lower_limit'])
 s1width_upper_limit = int(cfg['peaks']['s1width_upper_limit'])
 s2width_lower_limit = int(cfg['peaks']['s2width_lower_limit'])
@@ -49,20 +51,15 @@ s1_thre_base = int(cfg['peaks']['s1_thre_base'])
 s2_thre_base = int(cfg['peaks']['s2_thre_base'])
 trigger_position = int(cfg['peaks']['trigger_position'])
 
-PMTgain = [float(cfg['gains']['ch0_gain']),
-           float(cfg['gains']['ch1_gain']),
-           float(cfg['gains']['ch2_gain']),
-           float(cfg['gains']['ch3_gain'])]
-
-# Tree to store the data
-T1 = TTree("T1", "")
+PMTgain = np.array(eval(cfg['peaks']['gains']))
+hit_threshold = np.array(eval(cfg['peaks']['hit_threshold']))
 
 # Variables for the branches
 EventID = array('i', [0])
 UnixTime = array('l', [0])
 MicroSec = array('i', [0])
-BaseLineSumSigma = array('f', [0.0])
-nchannels = array("i", [4])  #Summed Baseline STD
+BaseLineSumSigma = array('f', [0.0]) #Summed Baseline STD
+nchannels = array("i", [7])
 BaseLineChannel = array("f", nchannels[0] * [0.0])  # Baseline mean per channel
 BaseLineChannelSigma = array("f", nchannels[0] * [0.0])  # Baseline STD per channel
 NbS1Peaks = array('i', [0])  # total nb of S1 peaks
@@ -80,6 +77,8 @@ S1sTot, S2sTot = array("f", maxpeaks * [0.0]), array("f", maxpeaks * [0.0])  # p
 S1sCoin, S2sCoin = array("i", maxpeaks * [0]), array("i", maxpeaks * [0])  # number of coincidence channels
 S2sPMT = array('f', maxpeaks * [0.0])  # main s2 size in each PMT
 
+# Tree to store the data
+T1 = TTree("T1", "")
 # Branches
 T1.Branch("EventID", EventID, "EventID/I")
 T1.Branch("UnixTime", UnixTime, "UnixTime/L")
@@ -125,10 +124,11 @@ def process(filename, outpath):
     print
     'Total number of event in processing: ', totN
 
+    totN = 120
     # Event time:
     infile.seek(0)
     HeaderTime = struct.unpack('i', infile.read(4))[0]
-    HeaderTime = HeaderTime - 7 * 60 * 60  ## convert UTC time to SD time.
+    HeaderTime = HeaderTime + 2 * 60 * 60  ## convert UTC time to LNGS time.
     print
     'Data taking time: ', datetime.utcfromtimestamp(HeaderTime).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -196,6 +196,8 @@ def process(filename, outpath):
         ## Number of S1 and S2 peaks:
         NbS1Peaks[0] = len(S1)
         NbS2Peaks[0] = len(S2)
+        print('S1: '+str(NbS1Peaks[0]))
+        print('S2: ' + str(NbS2Peaks[0]))
 
         if NbS1Peaks[0] > 100:
             NbS1Peaks[0] = 100
@@ -298,4 +300,118 @@ def process(filename, outpath):
 
     infile.close()
     T1.Write()
+    outfile.Close()
+
+
+# Tree to store the data
+T2 = TTree("T2", "")
+# Branches
+T2.Branch("EventID", EventID, "EventID/I")
+T2.Branch("UnixTime", UnixTime, "UnixTime/L")
+T2.Branch("MicroSec", MicroSec, "MicroSec/I")
+T2.Branch("nchannels", nchannels, "nchannels/I")
+T2.Branch("BaseLineChannel", BaseLineChannel, "BaseLineChannel[nchannels]/F")
+T2.Branch("BaseLineChannelSigma", BaseLineChannelSigma, "BaseLineChannelSigma[nchannels]/F")
+T2.Branch("NbS1Peaks", NbS1Peaks, "NbS1Peaks/I")
+T2.Branch("S1sTot", S1sTot, "S1sTot[NbS1Peaks]/F")
+# T2.Branch("S1sCoin", S1sCoin, "S1sCoin[NbS1Peaks]/I")
+T2.Branch("S1sRiseTime", S1sRiseTime, "S1sRiseTime[NbS1Peaks]/F")
+T2.Branch("S1sDropTime", S1sDropTime, "S1sDropTime[NbS1Peaks]/F")
+T2.Branch("S1sWidth", S1sWidth, "S1sWidth[NbS1Peaks]/F")
+
+# processing the raw_data for single PE
+def processSPE(filename, outpath):
+    outfile = TFile(outpath + '/' + filename[-26:-4] + '.root', "RECREATE")
+
+    # Total number of events:
+    infile = open(filename)
+    # go to the last event to check the event counter (ID)
+    infile.seek(-4 * (nchs * nsamps / 2 + 2), os.SEEK_END)
+    totN = (struct.unpack('i', infile.read(4))[0] & 0x00ffffff) + 1
+    print
+    'Total number of event in processing: ', totN
+    
+    # Event time:
+    infile.seek(0)
+    HeaderTime = struct.unpack('i', infile.read(4))[0]
+    HeaderTime = HeaderTime + 2 * 60 * 60  ## convert UTC time to LNGS time.
+    print
+    'Data taking time: ', datetime.utcfromtimestamp(HeaderTime).strftime('%Y-%m-%d %H:%M:%S')
+
+    # Define variables to calculate remaining time:
+    UnixTime[0] = HeaderTime  # Header Reference Time
+    t_passed = 0
+    t_left = 0
+    time_tol = 0
+    time_startc = time.time()
+    Time_all = HeaderTime * 1000000  ## To MicroSec
+
+    # Looping all selected events:
+    ## ===========================>
+    ## ===========================>
+    for event_number in range(1, totN):
+        EventID[0] = event_number
+
+        ## print '------------------------------------------------------- ',event_number
+
+        ## accumulating running time:
+        t_passed += time.time() - time_startc
+        time_startc = time.time()
+        if (event_number % 50 == 0) and (event_number != 0):
+            t_left = t_passed / float(event_number) * (totN - event_number)
+            print("Job progress : " + str(float(event_number) / float(totN) * 100)
+                  + "% Time passed/left: " + str(t_passed)
+                  + "/" + str(t_left) + " sec ")
+
+        # Go to rawdata !!!:
+        data, channel, Micro = get_raw(event_number, filename)
+        Time_all += Micro  ## In MicroSec
+        UnixTime[0] = int(Time_all / 1000000)  ## Back to Sec
+        MicroSec[0] = Time_all % 1000000  # MicroSec
+
+        spe = []
+        channel_found = []
+        spe_area = []
+        spe_peak = []
+        spe_width = []
+        spe_risetime = []
+        spe_droptime = []
+        for ich in range(len(channel)):
+            channel_data = channel[ich]
+            ## Baseline calculation:
+            BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
+            # print('BaseLineChannel: %f' % BaseLineChannel[ich])
+            channel_data_normalize = np.mean(channel_data[:nsamp_base]) - channel_data
+            BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
+            # print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
+
+            ## Find potential SPE peaks:
+            spe_potential = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
+            # print('SPE TEST: '+str(spe_potential))
+            spe += spe_potential
+            channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
+
+            for edge in spe_potential:
+                area_tmp = np.sum(channel_data_normalize[edge[0]:edge[1]+1])/10./50.*1e-8/(1.6e-19)/PMTgain[ich]
+                spe_area.append(area_tmp)
+                # integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
+                peak = peak_width(channel_data_normalize, 0.5, edge)
+                spe_peak.append(peak[1])
+                spe_width.append(peak[2] - peak[0])
+                peaklow = peak_width(channel_data_normalize, 0.1, edge)
+                spe_risetime.append(peak[0] - peaklow[0])
+                spe_droptime.append(peaklow[2] - peak[2])
+
+        NbS1Peaks[0] = len(spe)
+        for ip in range(NbS1Peaks[0]):
+            S1sTot[ip] = spe_area[ip]
+            S1sRiseTime[ip] = spe_risetime[ip]
+            S1sDropTime[ip] = spe_droptime[ip]
+            S1sWidth[ip] = spe_width[ip]
+
+        ## Filling the Tree:
+        T2.Fill()
+
+    infile.close()
+    T2.Write()
     outfile.Close()

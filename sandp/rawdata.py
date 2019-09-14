@@ -35,7 +35,8 @@ def get_raw(event_number, filename):
     def calculate_seek_number(event_number):
         if event_number == 0:
             return length_unit ## This offset is for the Unix before the header of the first event.
-        return length_unit + event_number*length_unit*6 + event_number*nsamps*nchs*length_unit/2
+        return length_unit+event_number*length_unit*6 + event_number*nsamps*nchs*length_unit/2
+        #return event_number*(nsamps*nchs*4/2+28)
         ##        UnixTime + event_number*Header        + event_number*samples
         ##        (note: samples need to be /2 according to the CAEN manual)
 
@@ -57,7 +58,7 @@ def get_raw(event_number, filename):
         delta_counter= counter-pre_counter
     else :
         delta_counter= counter-pre_counter+const_time
-    MicroSec =int(delta_counter * 8e-3) ## Convert time to Micro_seconds
+    MicroSec =int(delta_counter * 1e-2) ## Convert time to Micro_seconds
     
     ## Filling the data: ---->
     ## ---------------------->
@@ -68,8 +69,8 @@ def get_raw(event_number, filename):
         data_tmp=[]
         for i in range(nsamps/2):
             tmp=struct.unpack("i",ss.read(4))[0]
-            data_tmp.append((tmp >> 16)*2.0/4096)
-            data_tmp.append((tmp & 0x0000ffff)*2.0/4096)
+            data_tmp.append((tmp >> 16)*0.5/16384)
+            data_tmp.append((tmp & 0x0000ffff)*0.5/16384)
             
         channel.append([i for i in data_tmp])
         for i in range(nsamps):
@@ -86,16 +87,16 @@ def get_raw(event_number, filename):
 
 ## 2)
 ## summed WF smoothing:
-def smooth(origindata,meanNum=100,cover_num=5):
+def smooth(origindata,meanNum=100,cover_num=3):
     #clib=ctypes.cdll.LoadLibrary("/home/nilab/Processor/SanDP/sandp/smooth/smooth.so")
     clib = ctypes.cdll.LoadLibrary(full_path("smooth/smooth.so"))
     data_smooth=(ctypes.c_double * len(origindata))()
     for i in range(len(origindata)):
         data_smooth[i]=ctypes.c_double(origindata[i])
     clib.smooth(ctypes.byref(data_smooth),ctypes.c_int(meanNum),ctypes.c_int(len(data_smooth)),ctypes.c_int(cover_num))
-    
+
     for i in range(cover_num):
-        data_smooth[i]=0
-        data_smooth[i-1]=0
-    
+        data_smooth[i] = 0
+        data_smooth[i-1] = 0
+
     return data_smooth

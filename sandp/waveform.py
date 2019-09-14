@@ -48,10 +48,7 @@ s1_thre_base = int(cfg['peaks']['s1_thre_base'])
 s2_thre_base = int(cfg['peaks']['s2_thre_base'])
 trigger_position = int(cfg['peaks']['trigger_position'])
 
-PMTgain = [float(cfg['gains']['ch0_gain']),
-           float(cfg['gains']['ch1_gain']),
-           float(cfg['gains']['ch2_gain']),
-           float(cfg['gains']['ch3_gain'])]
+PMTgain = np.array(eval(cfg['peaks']['gains']))
 
 
 def drawWF(evt, fname, savepath=False):

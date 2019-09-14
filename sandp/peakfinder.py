@@ -60,4 +60,4 @@ def find_potential_peaks(data_smooth, left_width, right_width, threshold):
             pass
     ## First:  using 1) to roughly fiind all peaks.
     ## Second: call the func to re-fine the left/right edge.
-    return accurate_S_boundary(S,data_smooth,threshold/2., threshold*2.)
+    return accurate_S_boundary(S,data_smooth,threshold/2., threshold/2.)
