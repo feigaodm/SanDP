@@ -349,7 +349,7 @@ def processSPE(filename, outpath):
     # Looping all selected events:
     ## ===========================>
     ## ===========================>
-    for event_number in range(1, totN):
+    for event_number in range(1, totN-1):
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number

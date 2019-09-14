@@ -118,7 +118,7 @@ def drawWF(evt, fname, savepath=False):
         NbS2Peaks[0] = 100
 
     ## Baseline for each channel:
-    nchannels = array("i", [4])
+    nchannels = array("i", [7])
     BaseLineChannel = array("f", nchannels[0] * [0.0])
     BaseLineChannelSigma = array("f", nchannels[0] * [0.0])
 
