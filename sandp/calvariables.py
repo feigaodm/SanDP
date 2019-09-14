@@ -357,7 +357,7 @@ def processSPE(filename, outpath):
         ## accumulating running time:
         t_passed += time.time() - time_startc
         time_startc = time.time()
-        if (event_number % 500 == 0) and (event_number != 0):
+        if (event_number % 50 == 0) and (event_number != 0):
             t_left = t_passed / float(event_number) * (totN - event_number)
             print("Job progress : " + str(float(event_number) / float(totN) * 100)
                   + "% Time passed/left: " + str(t_passed)
@@ -401,12 +401,6 @@ def processSPE(filename, outpath):
                 peaklow = peak_width(channel_data_normalize, 0.1, edge)
                 spe_risetime.append(peak[0] - peaklow[0])
                 spe_droptime.append(peaklow[2] - peak[2])
-
-        print(spe)
-        print(channel_found)
-        print(spe_area)
-        print(spe_peak)
-        print(spe_width)
 
         NbS1Peaks[0] = len(spe)
         for ip in range(NbS1Peaks[0]):
