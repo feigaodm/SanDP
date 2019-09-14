@@ -143,7 +143,7 @@ def process(filename, outpath):
     # Looping all selected events:
     ## ===========================>
     ## ===========================>
-    for event_number in range(100, totN):
+    for event_number in range(1, totN):
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number
@@ -349,8 +349,7 @@ def processSPE(filename, outpath):
     # Looping all selected events:
     ## ===========================>
     ## ===========================>
-    # for event_number in range(1, totN):
-    for event_number in range(1, 3):
+    for event_number in range(1, totN):
         EventID[0] = event_number
 
         ## print '------------------------------------------------------- ',event_number
@@ -381,19 +380,19 @@ def processSPE(filename, outpath):
             channel_data = channel[ich]
             ## Baseline calculation:
             BaseLineChannel[ich] = np.mean(channel_data[:nsamp_base])
-            print('BaseLineChannel: %f' % BaseLineChannel[ich])
+            # print('BaseLineChannel: %f' % BaseLineChannel[ich])
             channel_data_normalize = np.mean(channel_data[:nsamp_base]) - channel_data
             BaseLineChannelSigma[ich] = np.std(channel_data[:nsamp_base])
             # print('BaseLineChannelSigma: %f' % BaseLineChannelSigma[ich])
 
             ## Find potential SPE peaks:
             spe_potential = find_potential_peaks(channel_data_normalize, spewidth_lower_limit, spewidth_upper_limit, hit_threshold[ich])
-            print('SPE TEST: '+str(spe_potential))
+            # print('SPE TEST: '+str(spe_potential))
             spe += spe_potential
             channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
 
             for edge in spe_potential:
-                area_tmp = np.sum(channel_data_normalize[edge[0]:edge[1]+1])/10./50./(1.6e-19)/PMTgain[ich]
+                area_tmp = np.sum(channel_data_normalize[edge[0]:edge[1]+1])/10./50.*1e-8/(1.6e-19)/PMTgain[ich]
                 spe_area.append(area_tmp)
                 # integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
                 peak = peak_width(channel_data_normalize, 0.5, edge)
