@@ -394,7 +394,7 @@ def processSPE(filename, outpath):
             channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
 
             for edge in spe_potential:
-                spe_area.append(integral(edge, ich, BaseLineChannel[ich], PMTgain[ich]))
+                spe_area.append(integral(edge, channel_data, BaseLineChannel[ich], PMTgain[ich]))
                 peak = peak_width(channel_data_normalize, 0.5, edge)
                 spe_peak.append(peak[1])
                 spe_width.append(peak[2] - peak[0])
@@ -405,7 +405,7 @@ def processSPE(filename, outpath):
         print(spe)
         print(channel_found)
         print(spe_area)
-        pront(spe_peak)
+        print(spe_peak)
 
         NbS1Peaks[0] = len(spe)
         #for ip, edge in enumerate(spe):
