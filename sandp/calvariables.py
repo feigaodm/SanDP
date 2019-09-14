@@ -314,11 +314,10 @@ T2.Branch("BaseLineChannel", BaseLineChannel, "BaseLineChannel[nchannels]/F")
 T2.Branch("BaseLineChannelSigma", BaseLineChannelSigma, "BaseLineChannelSigma[nchannels]/F")
 T2.Branch("NbS1Peaks", NbS1Peaks, "NbS1Peaks/I")
 T2.Branch("S1sTot", S1sTot, "S1sTot[NbS1Peaks]/F")
-T2.Branch("S1sCoin", S1sCoin, "S1sCoin[NbS1Peaks]/I")
+# T2.Branch("S1sCoin", S1sCoin, "S1sCoin[NbS1Peaks]/I")
 T2.Branch("S1sRiseTime", S1sRiseTime, "S1sRiseTime[NbS1Peaks]/F")
 T2.Branch("S1sDropTime", S1sDropTime, "S1sDropTime[NbS1Peaks]/F")
 T2.Branch("S1sWidth", S1sWidth, "S1sWidth[NbS1Peaks]/F")
-T2.Branch("S1sLowWidth", S1sLowWidth, "S1sLowWidth[NbS1Peaks]/F")
 
 # processing the raw_data for single PE
 def processSPE(filename, outpath):
@@ -394,7 +393,7 @@ def processSPE(filename, outpath):
             channel_found += list(ich * np.ones_like(range(0, len(spe_potential))))
 
             for edge in spe_potential:
-                area_tmp = np.sum(channel_data_normalize[edge[0]:edge[1]+1])*4.9932e8/PMTgain[ich]
+                area_tmp = np.sum(channel_data_normalize[edge[0]:edge[1]+1])/10./50./(1.6e-19)/PMTgain[ich]
                 spe_area.append(area_tmp)
                 # integral(S1, channel[i], BaseLineChannel[i], PMTgain[i])
                 peak = peak_width(channel_data_normalize, 0.5, edge)
@@ -408,19 +407,18 @@ def processSPE(filename, outpath):
         print(channel_found)
         print(spe_area)
         print(spe_peak)
+        print(spe_width)
 
         NbS1Peaks[0] = len(spe)
-        #for ip, edge in enumerate(spe):
-
-        '''
-            ## Peak Entropy for noise rejection:
-            for i in range(NbS1Peaks[0]):
-                S1sEntropy[i] = Entropy(nchannels[0], channel, BaseLineChannel, S1[S1s_Key[i]], BaseLineChannelSigma)
-
-            '''
+        for ip in range(NbS1Peaks[0]):
+            S1sTot[ip] = spe_area[ip]
+            S1sRiseTime[ip] = spe_risetime[ip]
+            S1sDropTime[ip] = spe_droptime[ip]
+            S1sWidth[ip] = spe_width[ip]
 
         ## Filling the Tree:
         T2.Fill()
+
     infile.close()
     T2.Write()
     outfile.Close()
